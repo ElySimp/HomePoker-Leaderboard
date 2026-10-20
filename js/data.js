@@ -1,14 +1,145 @@
-// Shared data loading, statistics and UI helpers for the leaderboard website.
+// Shared data loading, statistics, custom profiles, and manual rank tiers.
 
 const DATA_URL = "data/poker_data.json";
-const AVATAR_COLORS = ["#0a84ff", "#30d158", "#ff9f0a", "#bf5af2", "#ff453a", "#64d2ff", "#ff375f", "#5e5ce6"];
+const PLAYERS_URL = "data/players.json";
+
+// Default Apple color palette fallback
+const DEFAULT_PALETTE = [
+  "#0A84FF", // Apple Blue
+  "#30D158", // Mint Green
+  "#FF9F0A", // Orange
+  "#BF5AF2", // Purple
+  "#FF453A", // Coral Red
+  "#64D2FF", // Cyan
+  "#FF375F", // Hot Pink
+  "#5E5CE6", // Indigo
+  "#FFD60A", // Gold
+  "#D9915B", // Teak Bronze
+];
+
+// Available 10 Manual & Elo Rank Tiers (Rookie 400 to Grandmaster 2600+)
+const TIER_THRESHOLDS = [
+  { min: 2600, title: "Grandmaster", icon: "👑", cls: "tier-grandmaster" },
+  { min: 2350, title: "Master", icon: "⭐", cls: "tier-master" },
+  { min: 2150, title: "Expert", icon: "💠", cls: "tier-expert" },
+  { min: 1950, title: "Senior", icon: "🎖️", cls: "tier-senior" },
+  { min: 1700, title: "Advanced", icon: "⚡", cls: "tier-advanced" },
+  { min: 1450, title: "Intermediate", icon: "🔷", cls: "tier-intermediate" },
+  { min: 1200, title: "Junior", icon: "🔹", cls: "tier-junior" },
+  { min: 950, title: "Apprentice", icon: "🎯", cls: "tier-apprentice" },
+  { min: 700, title: "Novice", icon: "🔰", cls: "tier-novice" },
+  { min: 400, title: "Rookie", icon: "🛡️", cls: "tier-rookie" },
+];
+
+const KNOWN_TIERS = {
+  "Grandmaster": { title: "Grandmaster", icon: "👑", cls: "tier-grandmaster" },
+  "Master": { title: "Master", icon: "⭐", cls: "tier-master" },
+  "Expert": { title: "Expert", icon: "💠", cls: "tier-expert" },
+  "Senior": { title: "Senior", icon: "🎖️", cls: "tier-senior" },
+  "Advanced": { title: "Advanced", icon: "⚡", cls: "tier-advanced" },
+  "Intermediate": { title: "Intermediate", icon: "🔷", cls: "tier-intermediate" },
+  "Junior": { title: "Junior", icon: "🔹", cls: "tier-junior" },
+  "Apprentice": { title: "Apprentice", icon: "🎯", cls: "tier-apprentice" },
+  "Novice": { title: "Novice", icon: "🔰", cls: "tier-novice" },
+  "Rookie": { title: "Rookie", icon: "🛡️", cls: "tier-rookie" },
+};
+
+let playerCustomProfiles = {};
+let calculatedEloRatings = {};
+
+// Conservative multi-player pairwise Elo calculation (Start: 400)
+function computeAllEloRatings(sessions) {
+  const ratings = {};
+
+  // Sort sessions chronologically
+  const sorted = [...sessions].sort(
+    (a, b) => a.date.localeCompare(b.date) || (a.timestamp || "").localeCompare(b.timestamp || "")
+  );
+
+  sorted.forEach((session) => {
+    const players = session.players || [];
+    const n = players.length;
+    if (n < 2) return;
+
+    // Ensure all players in this session have at least baseline rating
+    players.forEach((p) => {
+      if (ratings[p.name] === undefined) {
+        ratings[p.name] = 400;
+      }
+    });
+
+    const deltas = {};
+    players.forEach((p) => {
+      deltas[p.name] = 0;
+    });
+
+    const baseK = 14;
+
+    // Pairwise decomposition
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const pA = players[i];
+        const pB = players[j];
+
+        const rA = ratings[pA.name];
+        const rB = ratings[pB.name];
+
+        // Expected score
+        const expA = 1 / (1 + Math.pow(10, (rB - rA) / 400));
+        const expB = 1 - expA;
+
+        // Actual head-to-head score
+        let actA = 0.5;
+        let actB = 0.5;
+        if (pA.net > pB.net) {
+          actA = 1.0;
+          actB = 0.0;
+        } else if (pA.net < pB.net) {
+          actA = 0.0;
+          actB = 1.0;
+        }
+
+        // Damped chip difference bonus (small swing for 50 buyin / 1-2 pot)
+        const chipDiff = Math.max(-0.6, Math.min(0.6, (pA.net - pB.net) / 120));
+        const pairDelta = (baseK / (n - 1)) * (actA - expA + 0.25 * chipDiff);
+
+        deltas[pA.name] += pairDelta;
+        deltas[pB.name] -= pairDelta;
+      }
+    }
+
+    // Apply deltas with minimum floor of 400
+    players.forEach((p) => {
+      ratings[p.name] = Math.max(400, Math.round((ratings[p.name] + deltas[p.name]) * 10) / 10);
+    });
+  });
+
+  calculatedEloRatings = ratings;
+  return ratings;
+}
+
+async function loadPlayerProfiles() {
+  try {
+    const res = await fetch(PLAYERS_URL, { cache: "no-store" });
+    if (res.ok) {
+      playerCustomProfiles = await res.json();
+    }
+  } catch (e) {
+    playerCustomProfiles = {};
+  }
+}
 
 async function loadSessions() {
+  await loadPlayerProfiles();
   const res = await fetch(DATA_URL, { cache: "no-store" });
   const json = await res.json();
-  return (json.sessions || [])
+  const sessions = (json.sessions || [])
     .map((s) => ({ ...s, category: s.category || "Texas Hold'em" }))
     .sort((a, b) => a.date.localeCompare(b.date) || (a.timestamp || "").localeCompare(b.timestamp || ""));
+  
+  // Precompute Elo for all players across all chronological sessions
+  computeAllEloRatings(sessions);
+  return sessions;
 }
 
 function getCategories(sessions) {
@@ -19,15 +150,25 @@ function filterSessions(sessions, category) {
   return category === "all" ? sessions : sessions.filter((s) => s.category === category);
 }
 
-// Build per-player statistics from a list of sessions.
+// Build per-player statistics from a list of sessions
 function buildPlayerStats(sessions) {
   const map = {};
   sessions.forEach((s) => {
     s.players.forEach((p) => {
       if (!map[p.name]) {
         map[p.name] = {
-          name: p.name, net: 0, sessions: 0, wins: 0, draws: 0, losses: 0, busts: 0,
-          best: null, worst: null, history: [], streak: 0, bestStreak: 0,
+          name: p.name,
+          net: 0,
+          sessions: 0,
+          wins: 0,
+          draws: 0,
+          losses: 0,
+          busts: 0,
+          best: null,
+          worst: null,
+          history: [],
+          streak: 0,
+          bestStreak: 0,
           comebacks: 0,
         };
       }
@@ -51,12 +192,19 @@ function buildPlayerStats(sessions) {
       if (!st.worst || p.net < st.worst.net) st.worst = { net: p.net, date: s.date };
 
       st.history.push({
-        date: s.date, category: s.category, session_id: s.session_id,
-        buy_in: p.buy_in, bust_count: p.bust_count || 0, final_chips: p.final_chips,
-        net: p.net, status: p.status, cumulative: st.net,
+        date: s.date,
+        category: s.category,
+        session_id: s.session_id,
+        buy_in: p.buy_in,
+        bust_count: p.bust_count || 0,
+        final_chips: p.final_chips,
+        net: p.net,
+        status: p.status,
+        cumulative: st.net,
       });
     });
   });
+
   return Object.values(map).map((st) => ({
     ...st,
     winRate: st.sessions ? Math.round((st.wins / st.sessions) * 100) : 0,
@@ -67,14 +215,32 @@ function rankPlayers(stats) {
   return [...stats].sort((a, b) => b.net - a.net || b.winRate - a.winRate);
 }
 
-// Fun auto-generated title for a player.
-function playerTitle(st) {
-  if (st.comebacks > 0 && st.busts >= 2 && st.net > 0) return "The Phoenix";
-  if (st.sessions > 0 && st.busts / st.sessions >= 1.5) return "ATM Berjalan";
-  if (st.sessions >= 2 && st.winRate >= 60) return "The Rock";
-  if (st.net >= 100) return "High Roller";
-  if (st.net > 0) return "Rising Star";
-  return "Rookie";
+// Player Tier based on Elo Rating (Start: 400) with optional admin override
+function getPlayerTier(playerName) {
+  const profile = playerCustomProfiles[playerName] || {};
+
+  // Prioritize explicit admin override in players.json if present, otherwise use dynamically calculated Elo
+  let elo = 400;
+  if (profile.elo !== undefined && profile.elo !== null && !isNaN(profile.elo)) {
+    elo = Number(profile.elo);
+  } else if (calculatedEloRatings[playerName] !== undefined) {
+    elo = calculatedEloRatings[playerName];
+  }
+
+  // Determine tier based on Elo
+  let matchedTier = TIER_THRESHOLDS.find((t) => elo >= t.min) || TIER_THRESHOLDS[TIER_THRESHOLDS.length - 1];
+
+  // If admin set a custom manual title override, allow it
+  if (profile.title && KNOWN_TIERS[profile.title]) {
+    matchedTier = KNOWN_TIERS[profile.title];
+  }
+
+  return {
+    title: matchedTier.title,
+    icon: matchedTier.icon,
+    cls: matchedTier.cls,
+    elo: Math.round(elo),
+  };
 }
 
 function totals(sessions) {
@@ -87,7 +253,13 @@ function totals(sessions) {
 }
 
 function esc(str) {
-  return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  return String(str).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  }[c]));
 }
 
 function fmtNet(n) {
@@ -99,20 +271,31 @@ function netClass(n) {
 }
 
 function avatarColor(name) {
+  if (playerCustomProfiles[name] && playerCustomProfiles[name].color) {
+    return playerCustomProfiles[name].color;
+  }
   let h = 0;
   for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return AVATAR_COLORS[h % AVATAR_COLORS.length];
+  return DEFAULT_PALETTE[h % DEFAULT_PALETTE.length];
 }
 
-function avatarHtml(name, big) {
-  return `<span class="avatar${big ? " big" : ""}" style="background:${avatarColor(name)}">${esc(name.charAt(0).toUpperCase())}</span>`;
+function avatarHtml(name, big = false) {
+  const profile = playerCustomProfiles[name];
+  const color = avatarColor(name);
+  const bigCls = big ? " big" : "";
+
+  if (profile && profile.avatar_url && profile.avatar_url.trim()) {
+    return `<span class="avatar${bigCls}" style="border: 2px solid ${color}"><img src="${esc(profile.avatar_url)}" alt="${esc(name)}" /></span>`;
+  }
+
+  const initial = esc(name.charAt(0).toUpperCase());
+  return `<span class="avatar${bigCls}" style="background:${color}">${initial}</span>`;
 }
 
 function cssVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
-// Animate a number from 0 to its target value.
 function countUp(el, target, duration = 700) {
   const start = performance.now();
   function frame(now) {
@@ -123,7 +306,6 @@ function countUp(el, target, duration = 700) {
   requestAnimationFrame(frame);
 }
 
-// Theme handling (dark by default, persisted in localStorage).
 function initTheme(onChange) {
   const saved = localStorage.getItem("theme") || "dark";
   document.documentElement.setAttribute("data-theme", saved);

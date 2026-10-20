@@ -89,6 +89,48 @@
           "status": "loss"
         }
       ]
+    },
+    {
+      "session_id": "2026-10-20_193414",
+      "date": "2026-10-20",
+      "timestamp": "2026-10-20T19:34:14.649549",
+      "category": "Blackjack",
+      "tax_per_round": 1,
+      "total_tax": 0,
+      "tax": 0,
+      "rounds": 0,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Faldo",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 100,
+          "net": 50,
+          "status": "win"
+        }
+      ]
+    },
+    {
+      "session_id": "2026-10-20_193422",
+      "date": "2026-10-20",
+      "timestamp": "2026-10-20T19:34:22.425739",
+      "category": "Baccarat",
+      "tax_per_round": 1,
+      "total_tax": 0,
+      "tax": 0,
+      "rounds": 0,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Faldo",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 100,
+          "net": 50,
+          "status": "win"
+        }
+      ]
     }
   ]
 }

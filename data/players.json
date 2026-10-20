@@ -1,0 +1,24 @@
+{
+  "Adrian": {
+    "color": "#0A84FF",
+    "avatar_url": ""
+  },
+  "Daniel": {
+    "color": "#FF453A",
+    "avatar_url": ""
+  },
+  "Fathi": {
+    "color": "#FFD60A",
+    "avatar_url": ""
+  },
+  "Julio": {
+    "color": "#30D158",
+    "avatar_url": ""
+  },
+  "Faldo": {
+    "color": "#b38cf2",
+    "avatar_url": "https://i.pinimg.com/736x/53/57/06/53570638cdba9889177e185dad035d1b.jpg",
+    "title": "Grandmaster",
+    "elo": 2600
+  }
+}
