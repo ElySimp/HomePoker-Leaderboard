@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HomePoker Leaderboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand">♠️ Home<span>Poker</span></div>
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">☀️</button>
+    </header>
+
+    <section class="hero">
+      <h1>Leaderboard</h1>
+      <p>Ranking chip bersih dari malam-malam main di kamar.</p>
+    </section>
+
+    <nav class="tabs" id="tabs"></nav>
+
+    <section class="grid-stats" id="globalStats"></section>
+
+    <div id="content"></div>
+
+    <footer>Dibuat untuk seru-seruan bareng temen kamar 🃏</footer>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/leaderboard.js"></script>
+</body>
+</html>

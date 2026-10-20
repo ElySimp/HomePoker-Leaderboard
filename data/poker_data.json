@@ -1,0 +1,94 @@
+{
+  "sessions": [
+    {
+      "session_id": "2026-10-19_174324",
+      "date": "2026-10-19",
+      "timestamp": "2026-10-20T17:43:24.451417",
+      "category": "Texas Hold'em",
+      "tax_per_round": 1,
+      "total_tax": 37,
+      "tax": 37,
+      "rounds": 37,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Adrian",
+          "buy_in": 200,
+          "bust_count": 3,
+          "final_chips": 87,
+          "net": -113,
+          "status": "loss"
+        },
+        {
+          "name": "Daniel",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 50,
+          "net": -50,
+          "status": "loss"
+        },
+        {
+          "name": "Fathi",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 63,
+          "net": 13,
+          "status": "win"
+        },
+        {
+          "name": "Julio",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 213,
+          "net": 113,
+          "status": "win"
+        }
+      ]
+    },
+    {
+      "session_id": "2026-10-20_174724",
+      "date": "2026-10-20",
+      "timestamp": "2026-10-20T17:47:24.435474",
+      "category": "Texas Hold'em",
+      "tax_per_round": 1,
+      "total_tax": 33,
+      "tax": 33,
+      "rounds": 33,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Adrian",
+          "buy_in": 150,
+          "bust_count": 2,
+          "final_chips": 154,
+          "net": 4,
+          "status": "win"
+        },
+        {
+          "name": "Daniel",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 13,
+          "net": -87,
+          "status": "loss"
+        },
+        {
+          "name": "Fathi",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 150,
+          "net": 100,
+          "status": "win"
+        },
+        {
+          "name": "Julio",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 0,
+          "net": -50,
+          "status": "loss"
+        }
+      ]
+    }
+  ]
+}
