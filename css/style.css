@@ -459,6 +459,12 @@ tbody tr.player-row:hover {
 }
 
 /* Chart container in sidebar */
+.charts-grid-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .chart-box-side {
   position: relative;
   height: 220px;
@@ -748,36 +754,6 @@ footer {
   }
 }
 
-/* Responsive Breakpoints */
-@media (max-width: 960px) {
-  .split-layout {
-    grid-template-columns: 1fr;
-  }
-  .profile-overview-split {
-    grid-template-columns: 1fr;
-  }
-  .grid-3x2 {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: auto;
-  }
-  .hero h1 {
-    font-size: 26px;
-  }
-  .profile-head {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-@media (max-width: 600px) {
-  .podium-banner {
-    grid-template-columns: 1fr;
-  }
-  .grid-3x2 {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* Game Arena Showcase Cards (Blackjack, Baccarat, etc.) */
 .game-arena-card {
   padding: 32px;
@@ -893,12 +869,290 @@ footer {
   color: var(--blue);
 }
 
-@media (max-width: 768px) {
-  .arena-grid {
+/* Responsive Breakpoints */
+@media (max-width: 960px) {
+  .split-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .charts-grid-side {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .chart-box-side {
+    height: 180px;
+  }
+  .profile-overview-split {
     grid-template-columns: 1fr;
   }
-  .arena-header {
+  .grid-3x2 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+  }
+  .hero h1 {
+    font-size: 26px;
+  }
+  .profile-head {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+/* Mobile & Small Screens (HP / Smartphone) */
+@media (max-width: 680px) {
+  .container {
+    padding: 12px 10px;
+  }
+  .header {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+  }
+  .hero {
+    margin: 2px 0 10px;
+  }
+  .hero h1 {
+    font-size: 20px;
+    letter-spacing: -0.5px;
+  }
+  .hero p {
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  /* Compact Tabs */
+  .tabs {
+    gap: 6px;
+    margin-bottom: 12px;
+    padding-bottom: 4px;
+  }
+  .tab {
+    padding: 6px 13px;
+    font-size: 12px;
+  }
+
+  /* Compact Global Stats 2x2 Grid */
+  .grid-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .grid-stats .card.stat {
+    padding: 10px 12px;
+    border-radius: 13px;
+  }
+  .grid-stats .stat .label {
+    font-size: 11px;
+  }
+  .grid-stats .stat .value {
+    font-size: 18px;
+    letter-spacing: -0.5px;
+    margin-top: 2px;
+  }
+  .grid-stats .stat .sub {
+    font-size: 10px;
+    margin-top: 1px;
+  }
+
+  /* Compact Card Containers */
+  .card {
+    padding: 12px;
+    border-radius: 14px;
+  }
+  .card-header-flex {
+    margin-bottom: 8px;
+  }
+  .card h2 {
+    font-size: 11px;
+    letter-spacing: 0.3px;
+  }
+
+  /* Charts Side-by-Side (Kiri dan Kanan Berdampingan) */
+  .charts-grid-side {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .chart-card {
+    padding: 10px 8px 10px;
+  }
+  .chart-card .card-header-flex {
+    margin-bottom: 4px;
+  }
+  .chart-card .card-header-flex h2 {
+    font-size: 10px;
+  }
+  .chart-card .badge-tag {
+    display: none; /* Hide badge tag on small mobile side-by-side to maximize canvas space */
+  }
+  .chart-box-side {
+    height: 150px;
+  }
+
+  /* Compact 3-Column Top Podium */
+  .podium-banner {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .podium-item {
+    padding: 8px 4px 10px;
+    border-radius: 12px;
+  }
+  .podium-item.rank-1 {
+    padding-top: 14px;
+    padding-bottom: 12px;
+  }
+  .podium-item .medal {
+    font-size: 18px;
+  }
+  .podium-item .avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 11px;
+  }
+  .podium-item .pname {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+  .podium-item .pnet {
+    font-size: 13px;
+    margin-top: 1px;
+  }
+
+  /* Standings Table Compact */
+  .table-wrap {
+    border-radius: 10px;
+    margin: 0 -2px;
+  }
+  table {
+    font-size: 12px;
+  }
+  th {
+    font-size: 10px;
+    padding: 6px 5px;
+  }
+  td {
+    padding: 6px 5px;
+  }
+  .name-cell {
+    gap: 5px;
+  }
+  .name-cell .avatar {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+  }
+  .rank-badge {
+    width: 18px;
+    height: 18px;
+    font-size: 9px;
+  }
+
+  /* Pagination Bar on Mobile */
+  .pagination {
+    padding-top: 10px;
+    margin-top: 4px;
+  }
+  .page-info {
+    font-size: 11px;
+  }
+  .page-btn {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  /* Highlights on Mobile */
+  .highlight-list {
+    gap: 6px;
+  }
+  .highlight-row {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .highlight-row .hl-left {
+    gap: 6px;
+  }
+  .highlight-row .hl-icon {
+    font-size: 16px;
+  }
+  .highlight-row .hl-title {
+    font-size: 11px;
+  }
+  .highlight-row .hl-player {
+    font-size: 11px;
+  }
+  .highlight-row .hl-val {
+    font-size: 12px;
+  }
+
+  /* Player Profile Mobile */
+  .profile-head {
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
+  .profile-head h1 {
+    font-size: 20px;
+  }
+  .profile-overview-split {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .donut-card {
+    padding: 12px;
+  }
+  .donut-chart-container {
+    width: 130px;
+    height: 130px;
+    margin: 6px 0;
+  }
+  .donut-center-rate {
+    font-size: 18px;
+  }
+  .grid-3x2 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 6px;
+  }
+  .grid-3x2 .stat {
+    padding: 10px 10px;
+  }
+  .grid-3x2 .stat .value {
+    font-size: 16px;
+  }
+  .grid-3x2 .stat .label {
+    font-size: 10px;
+  }
+  .grid-3x2 .stat .sub {
+    font-size: 9px;
+  }
+
+  /* Game Arena Card on Mobile */
+  .game-arena-card {
+    padding: 16px 12px;
+    border-radius: 14px;
+  }
+  .arena-header {
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+  }
+  .arena-icon-badge {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+    border-radius: 12px;
+  }
+  .arena-header h2 {
+    font-size: 18px;
+  }
+  .arena-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .arena-rule-box {
+    padding: 12px;
   }
 }

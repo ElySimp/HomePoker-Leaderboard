@@ -265,13 +265,15 @@ function chartDefaults() {
         labels: {
           color: muted,
           usePointStyle: true,
-          font: { size: 11 },
+          boxWidth: 6,
+          padding: 6,
+          font: { size: window.innerWidth < 680 ? 9 : 11 },
         },
       },
     },
     scales: {
-      x: { ticks: { color: muted, font: { size: 10 } }, grid: { color: grid } },
-      y: { ticks: { color: muted, font: { size: 10 } }, grid: { color: grid } },
+      x: { ticks: { color: muted, font: { size: window.innerWidth < 680 ? 9 : 10 } }, grid: { color: grid } },
+      y: { ticks: { color: muted, font: { size: window.innerWidth < 680 ? 9 : 10 } }, grid: { color: grid } },
     },
   };
 }
@@ -470,23 +472,25 @@ function render() {
 
       <!-- 1/3 Right Column: Top 5 Cumulative Line + Daily Bar Charts + Hall of Fame Highlights -->
       <div class="col-right-sidebar">
-        <div class="card">
-          <div class="card-header-flex">
-            <h2>Top 5 Cumulative</h2>
-            <span class="badge-tag">Trend Line</span>
+        <div class="charts-grid-side">
+          <div class="card chart-card">
+            <div class="card-header-flex">
+              <h2>Top 5 Cumulative</h2>
+              <span class="badge-tag">Trend Line</span>
+            </div>
+            <div class="chart-box-side">
+              <canvas id="top5LineChart"></canvas>
+            </div>
           </div>
-          <div class="chart-box-side">
-            <canvas id="top5LineChart"></canvas>
-          </div>
-        </div>
 
-        <div class="card">
-          <div class="card-header-flex">
-            <h2>Top 5 Daily Chips</h2>
-            <span class="badge-tag">Session Delta</span>
-          </div>
-          <div class="chart-box-side">
-            <canvas id="top5BarChart"></canvas>
+          <div class="card chart-card">
+            <div class="card-header-flex">
+              <h2>Top 5 Daily Chips</h2>
+              <span class="badge-tag">Session Delta</span>
+            </div>
+            <div class="chart-box-side">
+              <canvas id="top5BarChart"></canvas>
+            </div>
           </div>
         </div>
 
