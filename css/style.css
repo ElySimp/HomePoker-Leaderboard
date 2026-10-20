@@ -899,65 +899,127 @@ footer {
   }
 }
 
-/* Mobile & Small Screens (HP / Smartphone) */
+/* Elements that only exist for the mobile layout (hidden on desktop) */
+.rot-line,
+.chart-toggle,
+.hist-list {
+  display: none;
+}
+
+.rot-line {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.rot-line.rot-out {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.rot-elo {
+  color: var(--blue);
+  font-weight: 800;
+}
+
+/* Mobile & Small Screens: everything compact, no horizontal scrolling */
 @media (max-width: 680px) {
-  .container {
-    padding: 12px 10px;
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100%;
   }
-  .header {
-    margin-bottom: 10px;
-    padding-bottom: 8px;
+  .container {
+    padding: 0 10px 28px;
+  }
+  .topbar {
+    padding: 12px 0 6px;
+  }
+  .brand {
+    font-size: 18px;
+  }
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+    border-radius: 10px;
   }
   .hero {
-    margin: 2px 0 10px;
+    margin: 0 0 8px;
   }
   .hero h1 {
     font-size: 20px;
     letter-spacing: -0.5px;
   }
   .hero p {
-    font-size: 12px;
+    font-size: 11px;
     margin-top: 2px;
   }
+  footer {
+    margin-top: 18px;
+  }
 
-  /* Compact Tabs */
+  /* Tabs: fit all in one row without scrolling */
   .tabs {
-    gap: 6px;
-    margin-bottom: 12px;
-    padding-bottom: 4px;
+    gap: 5px;
+    margin-bottom: 8px;
+    padding-bottom: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar {
+    display: none;
   }
   .tab {
-    padding: 6px 13px;
-    font-size: 12px;
+    flex: 1 1 auto;
+    padding: 6px 8px;
+    font-size: 11px;
+    text-align: center;
   }
 
-  /* Compact Global Stats 2x2 Grid */
+  /* Global stats: 4 mini tiles in a single row */
   .grid-stats {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 12px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    margin-bottom: 10px;
   }
   .grid-stats .card.stat {
-    padding: 10px 12px;
-    border-radius: 13px;
+    padding: 7px 4px;
+    border-radius: 11px;
+    text-align: center;
+    box-shadow: none;
   }
   .grid-stats .stat .label {
-    font-size: 11px;
+    font-size: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .grid-stats .stat .value {
-    font-size: 18px;
+    font-size: 15px !important;
     letter-spacing: -0.5px;
-    margin-top: 2px;
+    margin-top: 1px;
+    padding-top: 0 !important;
   }
   .grid-stats .stat .sub {
-    font-size: 10px;
-    margin-top: 1px;
+    display: none;
   }
 
-  /* Compact Card Containers */
+  /* Cards */
+  .split-layout,
+  .col-left-main,
+  .col-right-sidebar {
+    gap: 10px;
+    min-width: 0;
+  }
   .card {
-    padding: 12px;
+    padding: 10px;
     border-radius: 14px;
+    box-shadow: none;
   }
   .card-header-flex {
     margin-bottom: 8px;
@@ -966,77 +1028,89 @@ footer {
     font-size: 11px;
     letter-spacing: 0.3px;
   }
-
-  /* Charts Side-by-Side (Kiri dan Kanan Berdampingan) */
-  .charts-grid-side {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .chart-card {
-    padding: 10px 8px 10px;
-  }
-  .chart-card .card-header-flex {
-    margin-bottom: 4px;
-  }
-  .chart-card .card-header-flex h2 {
+  .badge-tag {
     font-size: 10px;
-  }
-  .chart-card .badge-tag {
-    display: none; /* Hide badge tag on small mobile side-by-side to maximize canvas space */
-  }
-  .chart-box-side {
-    height: 150px;
+    padding: 2px 8px;
   }
 
-  /* Compact 3-Column Top Podium */
+  /* Top Podium: tight 3 columns */
   .podium-banner {
-    display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
+    gap: 4px;
   }
   .podium-item {
-    padding: 8px 4px 10px;
-    border-radius: 12px;
+    padding: 6px 2px 7px;
+    border-radius: 11px;
+    min-width: 0;
   }
   .podium-item.rank-1 {
-    padding-top: 14px;
-    padding-bottom: 12px;
+    padding-top: 8px;
+    padding-bottom: 9px;
+  }
+  .podium-item:hover {
+    transform: none;
   }
   .podium-item .medal {
-    font-size: 18px;
+    font-size: 15px;
+    line-height: 1;
   }
   .podium-item .avatar {
-    width: 30px;
-    height: 30px;
+    width: 26px;
+    height: 26px;
     font-size: 11px;
+    margin-top: 2px;
   }
   .podium-item .pname {
     font-size: 11px;
-    margin-top: 3px;
+    margin-top: 2px;
+    padding: 0 2px;
   }
   .podium-item .pnet {
-    font-size: 13px;
-    margin-top: 1px;
+    font-size: 12px;
+    margin-top: 0;
   }
 
-  /* Standings Table Compact */
+  /* Standings: 3 columns (Player / Net / Win%), alternating info line */
   .table-wrap {
-    border-radius: 10px;
-    margin: 0 -2px;
+    overflow-x: hidden;
   }
   table {
+    table-layout: fixed;
     font-size: 12px;
   }
+  th:first-child,
+  td:first-child {
+    width: 56%;
+  }
+  .col-hide-m,
+  .wl-detail,
+  .desk-sub {
+    display: none;
+  }
+  .rot-line {
+    display: block;
+  }
   th {
-    font-size: 10px;
-    padding: 6px 5px;
+    font-size: 9px;
+    padding: 4px 4px;
   }
   td {
-    padding: 6px 5px;
+    padding: 5px 4px;
   }
   .name-cell {
-    gap: 5px;
+    gap: 6px;
+    min-width: 0;
+  }
+  .name-col {
+    min-width: 0;
+    flex: 1;
+  }
+  .pl-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    line-height: 1.2;
   }
   .name-cell .avatar {
     width: 26px;
@@ -1047,85 +1121,238 @@ footer {
     width: 18px;
     height: 18px;
     font-size: 9px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  tbody tr.player-row:hover {
+    background: transparent;
   }
 
-  /* Pagination Bar on Mobile */
   .pagination {
-    padding-top: 10px;
-    margin-top: 4px;
+    padding-top: 8px;
+    margin-top: 2px;
   }
   .page-info {
-    font-size: 11px;
+    font-size: 10px;
   }
   .page-btn {
     padding: 4px 10px;
     font-size: 11px;
   }
 
-  /* Highlights on Mobile */
+  /* Charts: one interactive chart at a time, switched with a toggle */
+  .charts-grid-side {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .chart-toggle {
+    display: flex;
+    gap: 4px;
+    padding: 3px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+  }
+  .ct-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 0;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .ct-btn.active {
+    background: var(--blue);
+    color: #fff;
+  }
+  .chart-card {
+    display: none;
+  }
+  .chart-card.mob-active {
+    display: block;
+  }
+  .chart-card .badge-tag {
+    display: none;
+  }
+  .chart-box-side {
+    height: 190px;
+  }
+
+  /* Hall of Fame: 2x2 tiles */
   .highlight-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 6px;
   }
   .highlight-row {
-    padding: 8px 10px;
-    gap: 6px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 4px;
+    padding: 8px 9px;
+    min-width: 0;
   }
   .highlight-row .hl-left {
     gap: 6px;
+    min-width: 0;
+    width: 100%;
+  }
+  .highlight-row .hl-left > div {
+    min-width: 0;
   }
   .highlight-row .hl-icon {
-    font-size: 16px;
+    font-size: 15px;
   }
   .highlight-row .hl-title {
-    font-size: 11px;
+    font-size: 10px;
+    line-height: 1.25;
   }
   .highlight-row .hl-player {
     font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .highlight-row .hl-val {
-    font-size: 12px;
+    font-size: 13px;
   }
 
-  /* Player Profile Mobile */
+  /* Player profile */
   .profile-head {
-    gap: 12px;
-    margin-bottom: 12px;
-    padding-bottom: 12px;
+    gap: 10px;
+    margin: 4px 0 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .profile-head .avatar.big {
+    width: 52px;
+    height: 52px;
+    font-size: 22px;
   }
   .profile-head h1 {
     font-size: 20px;
+    letter-spacing: -0.5px;
+  }
+  .tier-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    margin-top: 3px;
+  }
+  .select {
+    font-size: 12px;
+    padding: 6px 8px;
   }
   .profile-overview-split {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 8px;
+    margin-bottom: 10px;
   }
   .donut-card {
-    padding: 12px;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 10px;
+    padding: 10px;
+  }
+  .donut-card h2 {
+    display: none;
   }
   .donut-chart-container {
-    width: 130px;
-    height: 130px;
-    margin: 6px 0;
+    width: 100px;
+    height: 100px;
+    margin: 0;
   }
   .donut-center-rate {
-    font-size: 18px;
-  }
-  .grid-3x2 {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    gap: 6px;
-  }
-  .grid-3x2 .stat {
-    padding: 10px 10px;
-  }
-  .grid-3x2 .stat .value {
     font-size: 16px;
   }
+  .donut-center-label {
+    font-size: 9px;
+  }
+  .grid-3x2 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto;
+    gap: 5px;
+  }
+  .grid-3x2 .stat {
+    padding: 8px 6px;
+    text-align: center;
+    box-shadow: none;
+  }
   .grid-3x2 .stat .label {
-    font-size: 10px;
+    font-size: 9px;
+  }
+  .grid-3x2 .stat .value {
+    font-size: 15px;
+    margin-top: 1px;
   }
   .grid-3x2 .stat .sub {
     font-size: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chart-box {
+    height: 190px;
+  }
+
+  /* Heatmap fits the screen width, no horizontal scroll */
+  .heatmap {
+    grid-template-rows: repeat(7, auto);
+    grid-auto-columns: 1fr;
+    gap: 2px;
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+  .hm-cell {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    border-radius: 3px;
+  }
+  .hm-legend {
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    font-size: 10px;
+    margin-top: 6px;
+  }
+
+  /* Match history: compact rows with alternating info line */
+  .hist-table {
+    display: none;
+  }
+  .hist-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .hist-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 2px;
+    border-top: 1px solid var(--border);
+  }
+  .hist-row:first-child {
+    border-top: none;
+  }
+  .hist-main {
+    flex: 1;
+    min-width: 0;
+  }
+  .hist-date {
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .hist-net {
+    font-size: 13px;
+  }
+  .hist-row .pill {
+    font-size: 10px;
+    padding: 2px 8px;
   }
 
   /* Game Arena Card on Mobile */

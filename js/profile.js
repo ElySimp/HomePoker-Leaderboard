@@ -76,9 +76,30 @@ function renderHistory(history) {
       </tr>`;
     })
     .join("");
-  return `<div class="table-wrap"><table>
+  const mobileRows = [...history]
+    .reverse()
+    .slice(0, 10)
+    .map((h) => {
+      const info = [
+        esc(h.category),
+        `Buy-in ${h.buy_in}${h.bust_count > 0 ? ` (${h.bust_count}x bust)` : ""}`,
+        `Final ${h.final_chips}`,
+      ];
+      return `<div class="hist-row">
+        <div class="hist-main">
+          <div class="hist-date">${esc(h.date)}</div>
+          ${rotLineHtml(info)}
+        </div>
+        <div class="hist-net ${netClass(h.net)}"><b>${fmtNet(h.net)}</b></div>
+        <span class="pill ${h.status}">${h.status.toUpperCase()}</span>
+      </div>`;
+    })
+    .join("");
+
+  return `<div class="table-wrap hist-table"><table>
     <thead><tr><th>Date</th><th>Game</th><th>Buy-In</th><th>Busts</th><th>Final</th><th>Net</th><th>Result</th></tr></thead>
-    <tbody>${rows}</tbody></table></div>`;
+    <tbody>${rows}</tbody></table></div>
+    <div class="hist-list">${mobileRows}</div>`;
 }
 
 function renderDonutChart(st) {
@@ -256,6 +277,7 @@ function render() {
   renderDonutChart(st);
   renderTrend(st.history);
   bindFilter();
+  startRotators();
 }
 
 function bindFilter() {

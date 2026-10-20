@@ -155,7 +155,7 @@ function renderHighlights(sessions, ranked) {
               <div class="hl-left">
                 <span class="hl-icon">⏱️</span>
                 <div>
-                  <div class="hl-title">Most Rounds in 1 Match • <span style="color:var(--text)">${esc(marathonSession.date)}</span></div>
+                  <div class="hl-title">Most Rounds • <span style="color:var(--text)">${esc(marathonSession.date)}</span></div>
                   <div class="hl-player">${esc(marathonSession.category)}</div>
                 </div>
               </div>
@@ -171,7 +171,7 @@ function renderHighlights(sessions, ranked) {
               <div class="hl-left">
                 <span class="hl-icon">💀</span>
                 <div>
-                  <div class="hl-title">Most Busted ("ATM") • Career</div>
+                  <div class="hl-title">Most Busted • Career</div>
                   <div class="hl-player">${esc(mostBust.name)}</div>
                 </div>
               </div>
@@ -200,21 +200,30 @@ function renderStandingsTable(ranked) {
 
       const tier = getPlayerTier(p.name);
 
+      // Alternating info line used on mobile instead of extra columns
+      const rotItems = [
+        `${tier.icon} ${tier.title}`,
+        `<span class="rot-elo">${tier.elo} Elo</span>`,
+        `${p.wins}W ${p.draws}D ${p.losses}L`,
+        `${p.sessions} games${p.busts > 0 ? ` • ${p.busts}x bust` : ""}`,
+      ];
+
       return `<tr class="player-row" data-name="${esc(p.name)}">
         <td>
           <div class="name-cell">
             <span class="rank-badge${badgeClass}">${globalRank}</span>
             ${avatarHtml(p.name)}
-            <div>
-              <div>${esc(p.name)}</div>
-              <div style="font-size:11px;color:var(--muted)">${tier.icon} ${tier.title} • <span style="color:var(--blue);font-weight:700">${tier.elo} Elo</span></div>
+            <div class="name-col">
+              <div class="pl-name">${esc(p.name)}</div>
+              <div class="desk-sub" style="font-size:11px;color:var(--muted)">${tier.icon} ${tier.title} • <span style="color:var(--blue);font-weight:700">${tier.elo} Elo</span></div>
+              ${rotLineHtml(rotItems)}
             </div>
           </div>
         </td>
         <td class="${netClass(p.net)}"><b>${fmtNet(p.net)}</b></td>
-        <td><b>${p.winRate}%</b> <span style="color:var(--muted);font-size:12px">(${p.wins}W ${p.losses}L)</span></td>
-        <td>${p.sessions}</td>
-        <td>${p.busts > 0 ? `<span class="neg">${p.busts}x</span>` : "-"}</td>
+        <td><b>${p.winRate}%</b> <span class="wl-detail" style="color:var(--muted);font-size:12px">(${p.wins}W ${p.losses}L)</span></td>
+        <td class="col-hide-m">${p.sessions}</td>
+        <td class="col-hide-m">${p.busts > 0 ? `<span class="neg">${p.busts}x</span>` : "-"}</td>
       </tr>`;
     })
     .join("");
@@ -242,8 +251,8 @@ function renderStandingsTable(ranked) {
             <th>Player</th>
             <th>Net Chips</th>
             <th>Win Rate</th>
-            <th>Sessions</th>
-            <th>Busts</th>
+            <th class="col-hide-m">Sessions</th>
+            <th class="col-hide-m">Busts</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -473,7 +482,11 @@ function render() {
       <!-- 1/3 Right Column: Top 5 Cumulative Line + Daily Bar Charts + Hall of Fame Highlights -->
       <div class="col-right-sidebar">
         <div class="charts-grid-side">
-          <div class="card chart-card">
+          <div class="chart-toggle" id="chartToggle">
+            <button class="ct-btn active" data-chart="line">Cumulative</button>
+            <button class="ct-btn" data-chart="bar">Daily</button>
+          </div>
+          <div class="card chart-card mob-active" data-chart="line">
             <div class="card-header-flex">
               <h2>Top 5 Cumulative</h2>
               <span class="badge-tag">Trend Line</span>
@@ -483,7 +496,7 @@ function render() {
             </div>
           </div>
 
-          <div class="card chart-card">
+          <div class="card chart-card" data-chart="bar">
             <div class="card-header-flex">
               <h2>Top 5 Daily Chips</h2>
               <span class="badge-tag">Session Delta</span>
@@ -527,8 +540,23 @@ function render() {
     });
   }
 
+  // Mobile chart toggle: show one chart at a time
+  const toggle = document.getElementById("chartToggle");
+  if (toggle) {
+    toggle.querySelectorAll(".ct-btn").forEach((btn) =>
+      btn.addEventListener("click", () => {
+        toggle.querySelectorAll(".ct-btn").forEach((b) => b.classList.toggle("active", b === btn));
+        content.querySelectorAll(".chart-card").forEach((card) =>
+          card.classList.toggle("mob-active", card.dataset.chart === btn.dataset.chart)
+        );
+        charts.forEach((c) => c.resize());
+      })
+    );
+  }
+
   // Render Charts for Top 5
   renderSidebarCharts(sessions, ranked);
+  startRotators();
 }
 
 async function init() {

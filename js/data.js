@@ -296,6 +296,38 @@ function cssVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
+// Alternating info lines for compact mobile rows.
+// Each ".rot-line" holds a JSON array in data-items; one global timer cycles all of them.
+let rotatorTimer = null;
+const ROTATE_INTERVAL_MS = 3000;
+
+function rotLineHtml(items) {
+  const safe = esc(JSON.stringify(items));
+  return `<div class="rot-line" data-idx="0" data-items="${safe}">${items[0]}</div>`;
+}
+
+function startRotators() {
+  if (rotatorTimer) return;
+  rotatorTimer = setInterval(() => {
+    document.querySelectorAll(".rot-line").forEach((el) => {
+      let items;
+      try {
+        items = JSON.parse(el.dataset.items);
+      } catch (e) {
+        return;
+      }
+      if (!items || items.length < 2) return;
+      const next = (Number(el.dataset.idx) + 1) % items.length;
+      el.classList.add("rot-out");
+      setTimeout(() => {
+        el.dataset.idx = String(next);
+        el.innerHTML = items[next];
+        el.classList.remove("rot-out");
+      }, 220);
+    });
+  }, ROTATE_INTERVAL_MS);
+}
+
 function countUp(el, target, duration = 700) {
   const start = performance.now();
   function frame(now) {
