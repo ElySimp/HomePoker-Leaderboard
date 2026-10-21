@@ -131,6 +131,96 @@
           "status": "win"
         }
       ]
+    },
+    {
+      "session_id": "2026-10-21_153104",
+      "date": "2026-10-21",
+      "timestamp": "2026-10-21T15:31:04.571214",
+      "category": "Blackjack",
+      "tax_per_round": 1,
+      "total_tax": 0,
+      "tax": 0,
+      "rounds": 0,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Faldo",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 80,
+          "net": 30,
+          "status": "win"
+        }
+      ]
+    },
+    {
+      "session_id": "2026-10-21_230052",
+      "date": "2026-10-21",
+      "timestamp": "2026-10-21T23:00:52.513297",
+      "category": "Texas Hold'em",
+      "tax_per_round": 1,
+      "total_tax": 91,
+      "tax": 91,
+      "rounds": 91,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Adrian",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 22,
+          "net": -28,
+          "status": "loss"
+        },
+        {
+          "name": "Daniel",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 139,
+          "net": 89,
+          "status": "win"
+        },
+        {
+          "name": "Fathi",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 40,
+          "net": -10,
+          "status": "loss"
+        },
+        {
+          "name": "Julio",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 160,
+          "net": 110,
+          "status": "win"
+        },
+        {
+          "name": "Faldo",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 41,
+          "net": -59,
+          "status": "loss"
+        },
+        {
+          "name": "Dean",
+          "buy_in": 200,
+          "bust_count": 3,
+          "final_chips": 4,
+          "net": -196,
+          "status": "loss"
+        },
+        {
+          "name": "Abraham",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 103,
+          "net": 3,
+          "status": "win"
+        }
+      ]
     }
   ]
 }
