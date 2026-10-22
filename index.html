@@ -5,13 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>HomePoker Leaderboard</title>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/train.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head>
 <body>
   <div class="container">
     <header class="topbar">
       <div class="brand">♠️ Home<span>Poker</span></div>
-      <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">☀️</button>
+      <div class="topbar-actions">
+        <button class="train-btn" id="trainBtn" aria-label="Open Training Hub">🎓 Train</button>
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">☀️</button>
+      </div>
     </header>
 
     <section class="hero">
@@ -28,7 +32,325 @@
     <footer>HomePoker Club • Built for casual dorm nights 🃏</footer>
   </div>
 
+  <!-- Training Hub Modal (Poker Range Lab & Casino Blackjack) -->
+  <div class="train-modal-backdrop hidden" id="trainModal" role="dialog" aria-modal="true">
+    <div class="train-modal-shell">
+      <div class="train-header">
+        <div class="train-nav-tabs">
+          <button class="train-tab-btn active" data-target="trainPokerView">♠️ Poker Range Lab</button>
+          <button class="train-tab-btn" data-target="trainBlackjackView">🃏 Blackjack Casino</button>
+        </div>
+        <button class="train-close-btn" id="trainCloseBtn" aria-label="Close training hub">✕</button>
+      </div>
+      <div class="train-body">
+        <!-- View 1: Poker Range Lab -->
+        <div class="train-view" id="trainPokerView">
+          <div class="poker-lab-container">
+            <!-- Position Bar -->
+            <div class="poker-controls-bar">
+              <div class="pos-group">
+                <span class="pos-label">Position:</span>
+                <button class="pos-btn" data-pos="UTG">UTG</button>
+                <button class="pos-btn" data-pos="MP">MP</button>
+                <button class="pos-btn" data-pos="CO">CO</button>
+                <button class="pos-btn active" data-pos="BTN">BTN</button>
+                <button class="pos-btn" data-pos="SB">SB</button>
+                <button class="pos-btn" data-pos="BB">BB</button>
+              </div>
+              <div class="poker-action-legend" id="pokerActionLegend">
+                <span><span class="legend-dot dot-3bet"></span>3-Bet</span>
+                <span><span class="legend-dot dot-raise"></span>Open-Raise / Bet</span>
+                <span><span class="legend-dot dot-call"></span>Call / Check</span>
+                <span><span class="legend-dot dot-fold"></span>Fold</span>
+              </div>
+            </div>
+
+            <!-- Multiway & Table Players Sub-bar -->
+            <div class="poker-sub-controls">
+              <div class="sub-ctrl-group">
+                <span class="sub-ctrl-label">Table Size:</span>
+                <button class="sub-pill-btn table-size-btn" data-size="2">2 (HU)</button>
+                <button class="sub-pill-btn table-size-btn" data-size="4">4-Max</button>
+                <button class="sub-pill-btn table-size-btn active" data-size="6">6-Max</button>
+                <button class="sub-pill-btn table-size-btn" data-size="7">7-Max</button>
+                <button class="sub-pill-btn table-size-btn" data-size="9">9-Max</button>
+              </div>
+              <div class="sub-ctrl-group">
+                <span class="sub-ctrl-label">Active Opponents in Pot:</span>
+                <button class="sub-pill-btn active-opp-btn active" data-opps="1">1</button>
+                <button class="sub-pill-btn active-opp-btn" data-opps="2">2</button>
+                <button class="sub-pill-btn active-opp-btn" data-opps="3">3</button>
+                <button class="sub-pill-btn active-opp-btn" data-opps="4">4</button>
+                <button class="sub-pill-btn active-opp-btn" data-opps="5">5</button>
+                <button class="sub-pill-btn active-opp-btn" data-opps="6">6</button>
+              </div>
+            </div>
+
+            <!-- PC Split: Left Column (Table + Description) & Right Column (Board + Advisor) -->
+            <div class="poker-main-split">
+              <!-- Left Column: 13x13 Heatmap Matrix & Hand Description Directly Below -->
+              <div class="poker-left-col">
+                <div class="poker-matrix-box">
+                  <div class="poker-grid" id="pokerGrid"></div>
+                </div>
+
+                <!-- Hand Inspector Card (Directly Below Table on PC) -->
+                <div class="inspector-card">
+                  <div class="inspector-header">
+                    <span class="hand-badge" id="inspHandBadge">AKs</span>
+                    <span class="hand-nick" id="inspHandNick">Big Slick Suited</span>
+                  </div>
+                  <div class="inspector-stats" style="grid-template-columns: 1fr">
+                    <div class="stat-mini">
+                      <div class="lbl">Win Equity</div>
+                      <div class="val" id="inspEquityVal">67.0%</div>
+                    </div>
+                    <div class="stat-mini">
+                      <div class="lbl">GTO Action Frequencies</div>
+                      <div class="val" id="inspActionVal">Bet / Raise 85% | Call 15%</div>
+                    </div>
+                  </div>
+                  <div class="inspector-advice" id="inspAdvice">
+                    Select a hand from the 13x13 table to view equity, position recommendation, and strategy tips.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Board & Hero Picker + Postflop Advisor & Bluff Radar -->
+              <div class="poker-right-col">
+                <div class="board-picker-card">
+                  <div class="board-section-title">
+                    <span>Community Board (Flop / Turn / River)</span>
+                    <button class="clear-board-btn" id="clearBoardBtn">✕ Clear</button>
+                  </div>
+                  <div class="card-slots-row">
+                    <div class="card-slot" id="boardSlot0"></div>
+                    <div class="card-slot" id="boardSlot1"></div>
+                    <div class="card-slot" id="boardSlot2"></div>
+                    <div class="card-slot" id="boardSlot3"></div>
+                    <div class="card-slot" id="boardSlot4"></div>
+                  </div>
+
+                  <div class="board-section-title" style="margin-top:10px">
+                    <span>Hero Hole Cards</span>
+                  </div>
+                  <div class="card-slots-row">
+                    <div class="card-slot" id="heroSlot0"></div>
+                    <div class="card-slot" id="heroSlot1"></div>
+                  </div>
+                </div>
+
+                <!-- Postflop Move Advisor Card -->
+                <div class="postflop-advisor-card">
+                  <div class="board-section-title" style="margin-bottom:2px">
+                    <span>💡 Postflop Tactical Advisor</span>
+                  </div>
+                  <div class="advisor-badge-row">
+                    <span class="made-hand-badge" id="postflopMadeBadge">Awaiting Flop Cards</span>
+                    <span class="action-rec-badge rec-waiting" id="postflopRecBadge">Preflop Mode</span>
+                  </div>
+                  <div class="advisor-reasoning" id="postflopReasoning">
+                    Select at least <b>3 Flop cards</b> and your <b>2 Hero cards</b> above to analyze postflop hand strength, draws, and recommended moves.
+                  </div>
+
+                  <!-- Bluffing Radar Box -->
+                  <div class="analysis-box" style="margin-top:6px">
+                    <div class="analysis-title">
+                      <span>🎯 Bluffing Radar</span>
+                      <span class="bluff-badge-low" id="heroBluffBadge">Awaiting Flop</span>
+                    </div>
+                    <div class="analysis-desc" id="heroBluffDesc">Deal board cards to evaluate bluffing opportunities.</div>
+                    <div style="border-top:1px solid var(--border);padding-top:6px;margin-top:6px">
+                      <div class="analysis-title" style="margin-bottom:2px">
+                        <span>Opponent Bluff Likelihood:</span>
+                        <span class="bluff-badge-low" id="oppBluffBadge">Preflop Mode</span>
+                      </div>
+                      <div class="analysis-desc" id="oppBluffDesc">Preflop betting lines reflect starting hand selection.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- View 2: Real Casino Blackjack Trainer -->
+        <div class="train-view hidden" id="trainBlackjackView">
+          <div class="bj-arena-container">
+            <!-- Top Status Bar -->
+            <div class="bj-top-bar">
+              <div class="bj-bankroll-group">
+                <div class="bankroll-chip-box">
+                  <span>🪙 Chips:</span>
+                  <span id="bjBankrollVal" style="color:var(--gold)">50</span>
+                </div>
+                <div class="net-profit-badge" id="bjNetProfitBadge">Net: 0</div>
+                <button class="rebuy-btn" id="bjRebuyBtn" disabled>Rebuy (+50)</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="bj-shuffle-indicator">
+                  <span>Shuffle in:</span>
+                  <span class="shuffle-badge" id="bjRoundsUntilShuffle">~35 rounds</span>
+                </div>
+                <button class="bj-stats-toggle-btn" id="bjStatsToggleBtn">📊 Session Stats</button>
+              </div>
+            </div>
+
+            <!-- Collapsible Session Stats & Charts Panel -->
+            <div class="bj-stats-panel hidden" id="bjStatsPanel">
+              <div class="bj-stats-summary-row">
+                <span class="stat-tag" id="bjStatWinrate" style="color:var(--gold)">Winrate: 0.0%</span>
+                <span class="stat-tag" id="bjStatRounds">Rounds: 0</span>
+                <span class="stat-tag" id="bjStatWLD">W: 0 | L: 0 | P: 0</span>
+              </div>
+              <div class="bj-charts-split">
+                <div class="chart-box-donut">
+                  <canvas id="bjDonutCanvas"></canvas>
+                </div>
+                <div class="chart-box-trend">
+                  <canvas id="bjTrendCanvas"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Felt Table -->
+            <div class="bj-felt-table">
+              <div class="table-watermark">
+                BLACKJACK PAYS 3 TO 2<br />
+                DEALER STANDS ON 17
+              </div>
+
+              <!-- Dealer Zone -->
+              <div class="bj-zone">
+                <div class="zone-label">
+                  <span>Dealer (House)</span>
+                  <span class="score-badge" id="bjDealerScore">-</span>
+                </div>
+                <div class="cards-hand-row" id="bjDealerCards"></div>
+              </div>
+
+              <!-- Status Banner -->
+              <div class="bj-status-banner" id="bjStatusBanner">Place your bet and press Deal to start!</div>
+
+              <!-- Player Zone -->
+              <div id="bjPlayerArea"></div>
+            </div>
+
+            <!-- Controls Dock with Presets, Custom Bet & Chips -->
+            <div class="bj-controls-dock">
+              <div class="bet-selection-row">
+                <div class="bet-custom-group">
+                  <span style="font-size:12px;color:var(--muted);font-weight:700">Bet:</span>
+                  <input type="number" class="custom-bet-input" id="bjCustomBetInput" value="5" min="1" />
+                  <button class="bet-btn-util" id="bjBetMaxBtn">Max</button>
+                  <button class="bet-btn-util" id="bjBetClearBtn">Min</button>
+                </div>
+                <div class="bet-presets-group">
+                  <span style="font-size:11px;color:var(--muted);font-weight:600">Preset:</span>
+                  <button class="bet-preset-btn" data-preset="5">5</button>
+                  <button class="bet-preset-btn" data-preset="10">10</button>
+                  <button class="bet-preset-btn" data-preset="25">25</button>
+                  <button class="bet-preset-btn" data-preset="50">50</button>
+                </div>
+                <div class="bet-chips-group">
+                  <span style="font-size:11px;color:var(--muted);font-weight:600">Add:</span>
+                  <div class="bet-chip chip-1" data-val="1">+1</div>
+                  <div class="bet-chip chip-5" data-val="5">+5</div>
+                  <div class="bet-chip chip-10" data-val="10">+10</div>
+                  <div class="bet-chip chip-25" data-val="25">+25</div>
+                </div>
+              </div>
+
+              <div class="bj-actions-row">
+                <button class="bj-act-btn btn-deal" id="bjBtnDeal">Deal</button>
+                <button class="bj-act-btn btn-hit" id="bjBtnHit" disabled>Hit</button>
+                <button class="bj-act-btn btn-stand" id="bjBtnStand" disabled>Stand</button>
+                <button class="bj-act-btn btn-double" id="bjBtnDouble" disabled>Double</button>
+                <button class="bj-act-btn btn-split" id="bjBtnSplit" disabled>Split</button>
+                <button class="bj-act-btn btn-surrender" id="bjBtnSurrender" disabled>Surrender</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Card Selector Overlay for Poker -->
+  <div class="quick-picker-modal hidden" id="quickCardPicker">
+    <div class="quick-picker-card">
+      <div style="font-size:13px;font-weight:800;margin-bottom:8px;display:flex;justify-content:space-between">
+        <span>Select Card Rank & Suit</span>
+        <button id="quickPickerCancel" style="background:none;border:none;color:var(--muted);cursor:pointer">✕</button>
+      </div>
+      <div class="picker-ranks">
+        <button class="p-rank-btn" data-rank="A">A</button>
+        <button class="p-rank-btn" data-rank="K">K</button>
+        <button class="p-rank-btn" data-rank="Q">Q</button>
+        <button class="p-rank-btn" data-rank="J">J</button>
+        <button class="p-rank-btn" data-rank="T">10</button>
+        <button class="p-rank-btn" data-rank="9">9</button>
+        <button class="p-rank-btn" data-rank="8">8</button>
+        <button class="p-rank-btn" data-rank="7">7</button>
+        <button class="p-rank-btn" data-rank="6">6</button>
+        <button class="p-rank-btn" data-rank="5">5</button>
+        <button class="p-rank-btn" data-rank="4">4</button>
+        <button class="p-rank-btn" data-rank="3">3</button>
+        <button class="p-rank-btn" data-rank="2">2</button>
+      </div>
+      <div class="picker-suits">
+        <button class="p-suit-btn" data-suit="♠">♠ Spades</button>
+        <button class="p-suit-btn red" data-suit="♥">♥ Hearts</button>
+        <button class="p-suit-btn red" data-suit="♦">♦ Diamonds</button>
+        <button class="p-suit-btn" data-suit="♣">♣ Clubs</button>
+      </div>
+    </div>
+  </div>
+
   <script src="js/data.js"></script>
   <script src="js/leaderboard.js"></script>
+  <script src="js/train-poker.js"></script>
+  <script src="js/train-blackjack.js"></script>
+  <script>
+    // Train Hub Modal Controller
+    (function () {
+      const trainBtn = document.getElementById("trainBtn");
+      const trainModal = document.getElementById("trainModal");
+      const trainCloseBtn = document.getElementById("trainCloseBtn");
+      let initialized = false;
+
+      function openModal() {
+        trainModal.classList.remove("hidden");
+        if (!initialized) {
+          if (window.initPokerLab) window.initPokerLab();
+          if (window.initBlackjackTrainer) window.initBlackjackTrainer();
+          initialized = true;
+        }
+      }
+
+      function closeModal() {
+        trainModal.classList.add("hidden");
+      }
+
+      if (trainBtn) trainBtn.addEventListener("click", openModal);
+      if (trainCloseBtn) trainCloseBtn.addEventListener("click", closeModal);
+
+      trainModal.addEventListener("click", (e) => {
+        if (e.target === trainModal) closeModal();
+      });
+
+      const tabBtns = trainModal.querySelectorAll(".train-tab-btn");
+      tabBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          tabBtns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          const targetId = btn.dataset.target;
+          trainModal.querySelectorAll(".train-view").forEach((v) => {
+            v.classList.toggle("hidden", v.id !== targetId);
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
