@@ -77,6 +77,7 @@
 .dot-3bet  { background: #bf5af2; }
 .dot-raise { background: #30d158; }
 .dot-call  { background: #ffd60a; }
+.dot-soft  { background: rgba(255, 214, 10, 0.4); border: 1px dashed #ffd60a; }
 .dot-fold  { background: rgba(255, 255, 255, 0.2); border: 1px solid var(--border); }
 
 /* Multiway Players & Opponents Sub-bar */
@@ -272,6 +273,14 @@
   border: 1px solid #ffd60a;
   color: #fff4a3;
   font-weight: 700;
+}
+.act-call-soft {
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+.act-raise-soft {
+  font-weight: 600;
+  transition: all 0.15s ease;
 }
 .act-fold {
   background: rgba(255, 255, 255, 0.03);

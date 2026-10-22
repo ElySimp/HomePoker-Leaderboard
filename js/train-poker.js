@@ -231,12 +231,14 @@
           <span><span class="legend-dot dot-3bet"></span>Monster / Value Bet</span>
           <span><span class="legend-dot dot-raise"></span>Bet / Semi-Bluff</span>
           <span><span class="legend-dot dot-call"></span>Call / Check</span>
+          <span><span class="legend-dot dot-soft"></span>Mixed / Marginal</span>
           <span><span class="legend-dot dot-fold"></span>Fold to Bet</span>`;
       } else {
         legendEl.innerHTML = `
           <span><span class="legend-dot dot-3bet"></span>3-Bet</span>
           <span><span class="legend-dot dot-raise"></span>Open-Raise / Bet</span>
           <span><span class="legend-dot dot-call"></span>Call / Check</span>
+          <span><span class="legend-dot dot-soft"></span>Mixed / Marginal</span>
           <span><span class="legend-dot dot-fold"></span>Fold</span>`;
       }
     }
@@ -250,15 +252,41 @@
         const freqs = getGTOFrequencies(hand);
         const isHero = hand === heroHand;
 
+        let actionClass = "act-fold";
+        let inlineStyle = "";
+
+        if (freqs.fold < 50) {
+          actionClass = freqs.primaryAction ? `act-${freqs.primaryAction}` : "act-fold";
+        } else if (freqs.call > 0 || freqs.raise > 0) {
+          // Mixed / Marginal holding: modulate opacity according to whichever is higher between call and raise
+          if (freqs.call >= freqs.raise) {
+            actionClass = "act-call-soft";
+            const alphaBg = (0.05 + (freqs.call / 100) * 0.16).toFixed(3);
+            const alphaBorder = (0.12 + (freqs.call / 100) * 0.28).toFixed(3);
+            const alphaText = (0.45 + (freqs.call / 100) * 0.55).toFixed(3);
+            inlineStyle = `background: rgba(255, 214, 10, ${alphaBg}); border-color: rgba(255, 214, 10, ${alphaBorder}); color: rgba(255, 244, 163, ${alphaText});`;
+          } else {
+            actionClass = "act-raise-soft";
+            const alphaBg = (0.05 + (freqs.raise / 100) * 0.16).toFixed(3);
+            const alphaBorder = (0.12 + (freqs.raise / 100) * 0.28).toFixed(3);
+            const alphaText = (0.45 + (freqs.raise / 100) * 0.55).toFixed(3);
+            inlineStyle = `background: rgba(48, 209, 88, ${alphaBg}); border-color: rgba(48, 209, 88, ${alphaBorder}); color: rgba(158, 252, 192, ${alphaText});`;
+          }
+        } else {
+          actionClass = "act-fold";
+        }
+
         const cell = document.createElement("div");
-        const actionClass = freqs.primaryAction ? `act-${freqs.primaryAction}` : "act-fold";
         cell.className = `hand-cell ${actionClass} ${dead ? "dead-hand" : ""} ${hand === selectedHand ? "active-hand" : ""} ${isHero ? "hero-hand-cell" : ""}`;
+        if (inlineStyle) {
+          cell.style.cssText = inlineStyle;
+        }
         cell.textContent = hand;
         cell.dataset.hand = hand;
 
-        if (isHero) {
-          cell.title = `Your Hand: ${hand} (${freqs.actionTitle})`;
-        }
+        cell.title = isHero
+          ? `Your Hand: ${hand} (${freqs.actionTitle})`
+          : `${hand} • ${freqs.actionTitle}`;
 
         cell.addEventListener("click", () => {
           selectedHand = hand;
