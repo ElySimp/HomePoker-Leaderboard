@@ -76,9 +76,37 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
+  padding: 12px 18px;
   border-bottom: 1px solid var(--border);
   background: var(--card-2);
+  gap: 12px;
+}
+
+.train-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.train-back-btn:hover {
+  background: var(--card);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.train-back-btn .back-arrow {
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .train-nav-tabs {
@@ -100,6 +128,9 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .train-tab-btn.active {
@@ -1276,18 +1307,44 @@
   }
   .train-modal-shell {
     max-height: 100vh;
+    max-height: 100dvh;
     height: 100vh;
+    height: 100dvh;
     border-radius: 0;
   }
   .train-header {
-    padding: 10px 12px;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .train-back-btn {
+    font-size: 11px;
+    padding: 5px 8px;
+    gap: 3px;
+  }
+  .train-back-btn .back-arrow {
+    font-size: 12px;
+  }
+  .train-nav-tabs {
+    gap: 3px;
+    padding: 2px;
+    flex: 1;
+    max-width: 190px;
+    justify-content: center;
   }
   .train-tab-btn {
     font-size: 11px;
-    padding: 5px 10px;
+    padding: 4px 6px;
+    flex: 1;
+    text-align: center;
+  }
+  .train-close-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 17px;
+    flex-shrink: 0;
   }
   .train-body {
-    padding: 10px;
+    padding: 10px 10px 75px; /* Safe distance so dock buttons are never overlapped by mobile toolbars */
   }
 
   .poker-matrix-box {
@@ -1332,26 +1389,102 @@
     gap: 8px;
   }
 
+  /* Blackjack Mobile Top Bar */
+  .bj-top-bar {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .bj-bankroll-group {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .bankroll-chip-box {
+    font-size: 13px;
+  }
+  .net-profit-badge {
+    font-size: 11px;
+    padding: 2px 7px;
+  }
+  .rebuy-btn {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+  .bj-shuffle-indicator {
+    font-size: 11px;
+  }
+
   /* Blackjack Mobile Table */
   .bj-felt-table {
-    padding: 16px 10px 14px;
-    min-height: 330px;
+    padding: 12px 8px 10px;
+    min-height: 240px;
+    border-radius: 14px;
+  }
+  .cards-hand-row {
+    min-height: 70px;
+    gap: 5px;
   }
   .bj-card {
-    width: 52px;
-    height: 76px;
+    width: 48px;
+    height: 70px;
+    border-radius: 6px;
   }
-  .bj-card-rank { font-size: 13px; }
-  .bj-card-suit { font-size: 11px; }
-  .bj-card-center-suit { font-size: 18px; }
-  .bet-chip {
-    width: 30px;
-    height: 30px;
+  .bj-card-rank { font-size: 12px; }
+  .bj-card-suit { font-size: 10px; }
+  .bj-card-center-suit { font-size: 16px; }
+  .bj-status-banner {
+    font-size: 13px;
+    margin: 4px 0;
+    min-height: 18px;
+  }
+
+  /* Blackjack Mobile Controls & Actions Dock */
+  .bj-controls-dock {
+    padding: 10px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  .bet-selection-row {
+    gap: 6px;
+  }
+  .bet-custom-group {
+    gap: 4px;
+  }
+  .custom-bet-input {
+    width: 58px;
+    font-size: 13px;
+    padding: 4px;
+  }
+  .bet-btn-util {
+    padding: 4px 6px;
     font-size: 10px;
   }
+  .bet-presets-group {
+    gap: 3px;
+  }
+  .bet-preset-btn {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+  .bet-chips-group {
+    gap: 4px;
+  }
+  .bet-chip {
+    width: 28px;
+    height: 28px;
+    font-size: 9px;
+  }
+
+  /* Symmetric 3x2 Action Grid for Phones */
+  .bj-actions-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
   .bj-act-btn {
-    padding: 8px 6px;
-    font-size: 11px;
-    min-width: 55px;
+    min-width: 0;
+    padding: 10px 4px;
+    font-size: 12px;
+    text-align: center;
+    border-radius: 8px;
   }
 }

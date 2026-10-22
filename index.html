@@ -36,9 +36,19 @@
   <div class="train-modal-backdrop hidden" id="trainModal" role="dialog" aria-modal="true">
     <div class="train-modal-shell">
       <div class="train-header">
+        <button class="train-back-btn" id="trainBackBtn" aria-label="Back to leaderboard">
+          <span class="back-arrow">←</span>
+          <span class="back-text">Back</span>
+        </button>
         <div class="train-nav-tabs">
-          <button class="train-tab-btn active" data-target="trainPokerView">♠️ Poker Range Lab</button>
-          <button class="train-tab-btn" data-target="trainBlackjackView">🃏 Blackjack Casino</button>
+          <button class="train-tab-btn active" data-target="trainPokerView">
+            <span class="tab-icon">♠️</span>
+            <span class="tab-label">Poker</span>
+          </button>
+          <button class="train-tab-btn" data-target="trainBlackjackView">
+            <span class="tab-icon">🃏</span>
+            <span class="tab-label">Blackjack</span>
+          </button>
         </div>
         <button class="train-close-btn" id="trainCloseBtn" aria-label="Close training hub">✕</button>
       </div>
@@ -317,6 +327,7 @@
       const trainBtn = document.getElementById("trainBtn");
       const trainModal = document.getElementById("trainModal");
       const trainCloseBtn = document.getElementById("trainCloseBtn");
+      const trainBackBtn = document.getElementById("trainBackBtn");
       let initialized = false;
 
       function openModal() {
@@ -334,6 +345,7 @@
 
       if (trainBtn) trainBtn.addEventListener("click", openModal);
       if (trainCloseBtn) trainCloseBtn.addEventListener("click", closeModal);
+      if (trainBackBtn) trainBackBtn.addEventListener("click", closeModal);
 
       trainModal.addEventListener("click", (e) => {
         if (e.target === trainModal) closeModal();
