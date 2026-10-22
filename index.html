@@ -6,6 +6,7 @@
   <title>HomePoker Leaderboard</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/train.css" />
+  <link rel="stylesheet" href="css/poker-lab.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head>
 <body>
@@ -101,6 +102,10 @@
               <!-- Left Column: 13x13 Heatmap Matrix & Hand Description Directly Below -->
               <div class="poker-left-col">
                 <div class="poker-matrix-box">
+                  <div class="matrix-header-bar">
+                    <span>13x13 Range Matrix</span>
+                    <span class="matrix-mode-tag" id="matrixModeTag">Preflop BTN</span>
+                  </div>
                   <div class="poker-grid" id="pokerGrid"></div>
                 </div>
 
@@ -150,11 +155,29 @@
                   </div>
                 </div>
 
-                <!-- Postflop Move Advisor Card -->
+                <!-- Postflop Tactical Advisor Card -->
                 <div class="postflop-advisor-card">
                   <div class="board-section-title" style="margin-bottom:2px">
                     <span>💡 Postflop Tactical Advisor</span>
                   </div>
+
+                  <!-- Integrated Hero Live Win Equity Banner -->
+                  <div class="hero-live-equity-panel" id="heroLiveEquityPanel">
+                    <div class="hero-live-equity-top">
+                      <div class="hero-eq-badge-group">
+                        <span class="hero-eq-label">Hero Win Equity:</span>
+                        <span class="hero-eq-number" id="heroLiveEquityVal">--%</span>
+                        <span class="hero-eq-opps" id="heroLiveOppsVal">(vs 1 opp)</span>
+                      </div>
+                      <div class="hero-outs-badge empty" id="heroLiveOutsBadge">-- Outs</div>
+                    </div>
+                    <div class="hero-eq-bar-track">
+                      <div class="hero-eq-bar-fill" id="heroLiveEqBar" style="width: 50%"></div>
+                      <div class="hero-eq-bar-tie" id="heroLiveTieBar" style="width: 0%"></div>
+                      <div class="hero-eq-bar-opp" id="heroLiveOppBar" style="width: 50%"></div>
+                    </div>
+                  </div>
+
                   <div class="advisor-badge-row">
                     <span class="made-hand-badge" id="postflopMadeBadge">Awaiting Flop Cards</span>
                     <span class="action-rec-badge rec-waiting" id="postflopRecBadge">Preflop Mode</span>
@@ -163,19 +186,25 @@
                     Select at least <b>3 Flop cards</b> and your <b>2 Hero cards</b> above to analyze postflop hand strength, draws, and recommended moves.
                   </div>
 
-                  <!-- Bluffing Radar Box -->
-                  <div class="analysis-box" style="margin-top:6px">
-                    <div class="analysis-title">
-                      <span>🎯 Bluffing Radar</span>
-                      <span class="bluff-badge-low" id="heroBluffBadge">Awaiting Flop</span>
-                    </div>
-                    <div class="analysis-desc" id="heroBluffDesc">Deal board cards to evaluate bluffing opportunities.</div>
-                    <div style="border-top:1px solid var(--border);padding-top:6px;margin-top:6px">
-                      <div class="analysis-title" style="margin-bottom:2px">
-                        <span>Opponent Bluff Likelihood:</span>
-                        <span class="bluff-badge-low" id="oppBluffBadge">Preflop Mode</span>
+                  <!-- Clean Bluffing Radar Box (Numbers & Bars Only, No Long Descriptions) -->
+                  <div class="bluff-meter-panel">
+                    <div class="bluff-row">
+                      <div class="bluff-meta">
+                        <span class="bluff-title">⚡ Hero Fold Equity (Bluff Viability)</span>
+                        <span class="bluff-number" id="heroBluffNum">--%</span>
                       </div>
-                      <div class="analysis-desc" id="oppBluffDesc">Preflop betting lines reflect starting hand selection.</div>
+                      <div class="bluff-bar-track">
+                        <div class="bluff-bar-fill fill-hero" id="heroBluffBar" style="width: 0%"></div>
+                      </div>
+                    </div>
+                    <div class="bluff-row" style="margin-top:8px">
+                      <div class="bluff-meta">
+                        <span class="bluff-title">🎭 Opponent Bluff Likelihood</span>
+                        <span class="bluff-number" id="oppBluffNum">--%</span>
+                      </div>
+                      <div class="bluff-bar-track">
+                        <div class="bluff-bar-fill fill-opp" id="oppBluffBar" style="width: 0%"></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -293,6 +322,10 @@
         <span>Select Card Rank & Suit</span>
         <button id="quickPickerCancel" style="background:none;border:none;color:var(--muted);cursor:pointer">✕</button>
       </div>
+      <div class="picker-top-actions">
+        <span class="picker-slot-target-tag" id="quickPickerTargetTag">Card Slot</span>
+        <button class="picker-remove-btn" id="quickPickerRemove">🗑️ Remove Card</button>
+      </div>
       <div class="picker-ranks">
         <button class="p-rank-btn" data-rank="A">A</button>
         <button class="p-rank-btn" data-rank="K">K</button>
@@ -309,16 +342,17 @@
         <button class="p-rank-btn" data-rank="2">2</button>
       </div>
       <div class="picker-suits">
-        <button class="p-suit-btn" data-suit="♠">♠ Spades</button>
-        <button class="p-suit-btn red" data-suit="♥">♥ Hearts</button>
-        <button class="p-suit-btn red" data-suit="♦">♦ Diamonds</button>
-        <button class="p-suit-btn" data-suit="♣">♣ Clubs</button>
+        <button class="p-suit-btn suit-spades" data-suit="♠">♠ Spades</button>
+        <button class="p-suit-btn suit-hearts" data-suit="♥">♥ Hearts</button>
+        <button class="p-suit-btn suit-diamonds" data-suit="♦">♦ Diamonds</button>
+        <button class="p-suit-btn suit-clubs" data-suit="♣">♣ Clubs</button>
       </div>
     </div>
   </div>
 
   <script src="js/data.js"></script>
   <script src="js/leaderboard.js"></script>
+  <script src="js/poker-evaluator.js"></script>
   <script src="js/train-poker.js"></script>
   <script src="js/train-blackjack.js"></script>
   <script>
