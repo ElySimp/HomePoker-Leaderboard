@@ -311,14 +311,6 @@
           "status": "loss"
         },
         {
-          "name": "Julio",
-          "buy_in": 50,
-          "bust_count": 0,
-          "final_chips": 0,
-          "net": -50,
-          "status": "loss"
-        },
-        {
           "name": "Faldo",
           "buy_in": 50,
           "bust_count": 0,
