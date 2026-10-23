@@ -274,6 +274,173 @@
           "status": "loss"
         }
       ]
+    },
+    {
+      "session_id": "2026-10-24_025307",
+      "date": "2026-10-24",
+      "timestamp": "2026-10-24T02:53:07.686512",
+      "category": "Texas Hold'em",
+      "tax_per_round": 1,
+      "total_tax": 23,
+      "tax": 23,
+      "rounds": 23,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Adrian",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 50,
+          "net": -50,
+          "status": "loss"
+        },
+        {
+          "name": "Daniel",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 37,
+          "net": -13,
+          "status": "loss"
+        },
+        {
+          "name": "Fathi",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 28,
+          "net": -72,
+          "status": "loss"
+        },
+        {
+          "name": "Julio",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 0,
+          "net": -50,
+          "status": "loss"
+        },
+        {
+          "name": "Faldo",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 75,
+          "net": 25,
+          "status": "win"
+        },
+        {
+          "name": "Abraham",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 114,
+          "net": 64,
+          "status": "win"
+        },
+        {
+          "name": "Yuman",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 50,
+          "net": -50,
+          "status": "loss"
+        },
+        {
+          "name": "Haikal",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 191,
+          "net": 141,
+          "status": "win"
+        },
+        {
+          "name": "Gerris",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 32,
+          "net": -18,
+          "status": "loss"
+        }
+      ]
+    },
+    {
+      "session_id": "2026-10-24_025425",
+      "date": "2026-10-24",
+      "timestamp": "2026-10-24T02:54:25.486222",
+      "category": "Baccarat",
+      "tax_per_round": 1,
+      "total_tax": 0,
+      "tax": 0,
+      "rounds": 0,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Adrian",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 149,
+          "net": 49,
+          "status": "win"
+        },
+        {
+          "name": "Daniel",
+          "buy_in": 150,
+          "bust_count": 2,
+          "final_chips": 215,
+          "net": 65,
+          "status": "win"
+        },
+        {
+          "name": "Fathi",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 5,
+          "net": -45,
+          "status": "loss"
+        },
+        {
+          "name": "Gerris",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 54,
+          "net": -46,
+          "status": "loss"
+        }
+      ]
+    },
+    {
+      "session_id": "2026-10-24_025517",
+      "date": "2026-10-24",
+      "timestamp": "2026-10-24T02:55:17.559190",
+      "category": "Blackjack",
+      "tax_per_round": 1,
+      "total_tax": 0,
+      "tax": 0,
+      "rounds": 0,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Daniel",
+          "buy_in": 150,
+          "bust_count": 2,
+          "final_chips": 50,
+          "net": -100,
+          "status": "loss"
+        },
+        {
+          "name": "Fathi",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 211,
+          "net": 111,
+          "status": "win"
+        },
+        {
+          "name": "Gerris",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 50,
+          "net": -50,
+          "status": "loss"
+        }
+      ]
     }
   ]
 }
