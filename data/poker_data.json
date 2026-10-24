@@ -433,6 +433,59 @@
           "status": "loss"
         }
       ]
+    },
+    {
+      "session_id": "2026-10-25_012103",
+      "date": "2026-10-25",
+      "timestamp": "2026-10-25T01:21:03.379701",
+      "category": "Texas Hold'em",
+      "tax_per_round": 1,
+      "total_tax": 25,
+      "tax": 25,
+      "rounds": 25,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Adrian",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 6,
+          "net": -94,
+          "status": "loss"
+        },
+        {
+          "name": "Daniel",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 9,
+          "net": -91,
+          "status": "loss"
+        },
+        {
+          "name": "Fathi",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 58,
+          "net": 8,
+          "status": "win"
+        },
+        {
+          "name": "Julio",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 190,
+          "net": 140,
+          "status": "win"
+        },
+        {
+          "name": "Hidayat",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 62,
+          "net": 12,
+          "status": "win"
+        }
+      ]
     }
   ]
 }
