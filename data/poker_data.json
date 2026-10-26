@@ -486,6 +486,72 @@
           "status": "win"
         }
       ]
+    },
+    {
+      "session_id": "2026-10-26_120750",
+      "date": "2026-10-26",
+      "timestamp": "2026-10-26T12:07:50.378153",
+      "category": "Texas Hold'em",
+      "tax_per_round": 1,
+      "total_tax": 39,
+      "tax": 39,
+      "rounds": 39,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Adrian",
+          "buy_in": 100,
+          "bust_count": 1,
+          "final_chips": 29,
+          "net": -71,
+          "status": "loss"
+        },
+        {
+          "name": "Daniel",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 114,
+          "net": 64,
+          "status": "win"
+        },
+        {
+          "name": "Fathi",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 18,
+          "net": -32,
+          "status": "loss"
+        }
+      ]
+    },
+    {
+      "session_id": "2026-10-26_120817",
+      "date": "2026-10-26",
+      "timestamp": "2026-10-26T12:08:17.328016",
+      "category": "Blackjack",
+      "tax_per_round": 1,
+      "total_tax": 0,
+      "tax": 0,
+      "rounds": 0,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Adrian",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 106,
+          "net": 56,
+          "status": "win"
+        },
+        {
+          "name": "Fathi",
+          "buy_in": 150,
+          "bust_count": 2,
+          "final_chips": 16,
+          "net": -134,
+          "status": "loss"
+        }
+      ]
     }
   ]
 }
