@@ -17,7 +17,7 @@ const DEFAULT_PALETTE = [
   "#D9915B", // Teak Bronze
 ];
 
-// Available 10 Manual & Elo Rank Tiers (Rookie 400 to Grandmaster 2600+)
+// Available 10 Manual & Elo Rank Tiers (Rookie 100 to Grandmaster 2600+)
 const TIER_THRESHOLDS = [
   { min: 2600, title: "Grandmaster", icon: "👑", cls: "tier-grandmaster" },
   { min: 2350, title: "Master", icon: "⭐", cls: "tier-master" },
@@ -28,7 +28,7 @@ const TIER_THRESHOLDS = [
   { min: 1200, title: "Junior", icon: "🔹", cls: "tier-junior" },
   { min: 950, title: "Apprentice", icon: "🎯", cls: "tier-apprentice" },
   { min: 700, title: "Novice", icon: "🔰", cls: "tier-novice" },
-  { min: 400, title: "Rookie", icon: "🛡️", cls: "tier-rookie" },
+  { min: 100, title: "Rookie", icon: "🛡️", cls: "tier-rookie" },
 ];
 
 const KNOWN_TIERS = {
@@ -47,7 +47,8 @@ const KNOWN_TIERS = {
 let playerCustomProfiles = {};
 let calculatedEloRatings = {};
 
-// Conservative multi-player pairwise Elo calculation (Start: 400)
+// Multi-player pairwise Elo calculation (Start: 400, Floor: 100)
+// Balanced formula: 60% finish position, 30% contextual chip gap, 10% round-aware risk management
 function computeAllEloRatings(sessions) {
   const ratings = {};
 
@@ -61,7 +62,7 @@ function computeAllEloRatings(sessions) {
     const n = players.length;
     if (n < 2) return;
 
-    // Ensure all players in this session have at least baseline rating
+    // Ensure all players in this session have at least baseline rating (Start: 400)
     players.forEach((p) => {
       if (ratings[p.name] === undefined) {
         ratings[p.name] = 400;
@@ -73,7 +74,14 @@ function computeAllEloRatings(sessions) {
       deltas[p.name] = 0;
     });
 
-    const baseK = 14;
+    const baseK = 16;
+    const sessionRounds = session.rounds && session.rounds > 0 ? session.rounds : 0;
+
+    // Compute session-wide chip spread (max net - min net) to evaluate relative performance
+    const nets = players.map((p) => p.net || 0);
+    const maxNet = Math.max(...nets);
+    const minNet = Math.min(...nets);
+    const spread = Math.max(20, maxNet - minNet);
 
     // Pairwise decomposition
     for (let i = 0; i < n; i++) {
@@ -88,7 +96,7 @@ function computeAllEloRatings(sessions) {
         const expA = 1 / (1 + Math.pow(10, (rB - rA) / 400));
         const expB = 1 - expA;
 
-        // Actual head-to-head score
+        // 1. Finish order head-to-head score (foundation ~60%)
         let actA = 0.5;
         let actB = 0.5;
         if (pA.net > pB.net) {
@@ -99,18 +107,28 @@ function computeAllEloRatings(sessions) {
           actB = 1.0;
         }
 
-        // Damped chip difference bonus (small swing for 50 buyin / 1-2 pot)
-        const chipDiff = Math.max(-0.6, Math.min(0.6, (pA.net - pB.net) / 120));
-        const pairDelta = (baseK / (n - 1)) * (actA - expA + 0.25 * chipDiff);
+        // 2. Contextual Chip Gap within the night's table spread (-1.0 to +1.0) (~30%)
+        const chipGap = Math.max(-1.0, Math.min(1.0, (pA.net - pB.net) / spread));
+
+        // 3. Round-Aware Risk Management (Bust Density) (~10%)
+        // High bust count in few rounds = poor management penalty; marathon sessions tolerate natural bust variance
+        let bustAdj = 0;
+        if (sessionRounds > 0) {
+          const rateA = (pA.bust_count || 0) / Math.max(20, sessionRounds);
+          const rateB = (pB.bust_count || 0) / Math.max(20, sessionRounds);
+          bustAdj = Math.max(-0.2, Math.min(0.2, (rateB - rateA) * 2.0));
+        }
+
+        const pairDelta = (baseK / (n - 1)) * (actA - expA + 0.30 * chipGap + bustAdj);
 
         deltas[pA.name] += pairDelta;
         deltas[pB.name] -= pairDelta;
       }
     }
 
-    // Apply deltas with minimum floor of 400
+    // Apply deltas with minimum floor of 100
     players.forEach((p) => {
-      ratings[p.name] = Math.max(400, Math.round((ratings[p.name] + deltas[p.name]) * 10) / 10);
+      ratings[p.name] = Math.max(100, Math.round((ratings[p.name] + deltas[p.name]) * 10) / 10);
     });
   });
 

@@ -465,6 +465,10 @@ tbody tr.player-row:hover {
   gap: 16px;
 }
 
+.chart-toggle {
+  display: none;
+}
+
 .chart-box-side {
   position: relative;
   height: 220px;

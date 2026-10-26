@@ -552,6 +552,27 @@
           "status": "loss"
         }
       ]
+    },
+    {
+      "session_id": "2026-10-26_155022",
+      "date": "2026-10-26",
+      "timestamp": "2026-10-26T15:50:22.346503",
+      "category": "Blackjack",
+      "tax_per_round": 1,
+      "total_tax": 0,
+      "tax": 0,
+      "rounds": 0,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Faldo",
+          "buy_in": 50,
+          "bust_count": 1,
+          "final_chips": 1150,
+          "net": 1050,
+          "status": "win"
+        }
+      ]
     }
   ]
 }

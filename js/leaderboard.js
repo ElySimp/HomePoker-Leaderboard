@@ -1,4 +1,4 @@
-// Leaderboard page: 2/3 Left (Podium on top + 10-player Paginated Standings) & 1/3 Right (Top 5 Cumulative Line + Daily Bar Charts + Hall of Fame Highlights).
+// Leaderboard page: 2/3 Left (Podium on top + 10-player Paginated Standings) & 1/3 Right (Top 5 Cumulative Line + Elo Power Ranking Charts + Hall of Fame Highlights).
 
 let allSessions = [];
 let currentCategory = ""; // Will default to "Texas Hold'em" on initial load
@@ -328,28 +328,132 @@ function renderSidebarCharts(sessions, ranked) {
     );
   }
 
-  // 2. Daily Bar Chart (Top 5)
-  const barSets = top5.map((p) => ({
-    label: p.name,
-    backgroundColor: avatarColor(p.name),
-    borderRadius: 5,
-    data: dates.map((d) =>
-      sessions
-        .filter((s) => s.date === d)
-        .reduce((acc, s) => {
-          const pl = s.players.find((x) => x.name === p.name);
-          return acc + (pl ? pl.net : 0);
-        }, 0)
-    ),
-  }));
+  // 2. Elo Power Ranking Chart (Top 5 by Elo Rating - Horizontal Bar)
+  const eloRanked = [...ranked]
+    .map((p) => {
+      const tier = getPlayerTier(p.name);
+      return {
+        ...p,
+        tier,
+        elo: tier.elo,
+      };
+    })
+    .sort((a, b) => b.elo - a.elo || b.net - a.net);
 
-  const barCanvas = document.getElementById("top5BarChart");
-  if (barCanvas) {
+  const top5Elo = eloRanked.slice(0, 5);
+
+  const eloCanvas = document.getElementById("top5EloChart");
+  if (eloCanvas && top5Elo.length) {
+    const minVal = Math.min(...top5Elo.map((p) => p.elo));
+    const maxVal = Math.max(...top5Elo.map((p) => p.elo));
+    const muted = cssVar("--muted");
+    const grid = cssVar("--grid");
+
+    // Dynamic 25-step rounding for high-contrast Elo comparison
+    let minFloor = Math.floor(minVal / 25) * 25;
+    if (minFloor === minVal) minFloor = Math.max(0, minFloor - 25);
+
+    let maxCeil = Math.ceil(maxVal / 25) * 25;
+    if (maxCeil - maxVal < 10) maxCeil += 25;
+
+    // Inline plugin to render Elo rating text right next to each horizontal bar
+    const eloValuePlugin = {
+      id: "eloValuePlugin",
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((dataset, i) => {
+          const meta = chart.getDatasetMeta(i);
+          meta.data.forEach((bar, index) => {
+            const val = dataset.data[index];
+            if (val === undefined || val === null) return;
+            ctx.save();
+            ctx.fillStyle = cssVar("--text");
+            ctx.font = window.innerWidth < 680 ? "bold 10px -apple-system, sans-serif" : "bold 11px -apple-system, sans-serif";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+            ctx.fillText(`${val}`, bar.x + 6, bar.y);
+            ctx.restore();
+          });
+        });
+      },
+    };
+
     charts.push(
-      new Chart(barCanvas, {
+      new Chart(eloCanvas, {
         type: "bar",
-        data: { labels: dates, datasets: barSets },
-        options: chartDefaults(),
+        data: {
+          labels: top5Elo.map((p) => `${p.tier.icon} ${p.name}`),
+          datasets: [
+            {
+              label: "Elo Rating",
+              data: top5Elo.map((p) => p.elo),
+              backgroundColor: top5Elo.map((p) => avatarColor(p.name)),
+              borderRadius: 6,
+              borderSkipped: false,
+              barPercentage: 0.72,
+              categoryPercentage: 0.85,
+            },
+          ],
+        },
+        plugins: [eloValuePlugin],
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                title: (items) => {
+                  const p = top5Elo[items[0].dataIndex];
+                  return `${p.tier.icon} ${p.name} • ${p.tier.title}`;
+                },
+                label: (item) => {
+                  const p = top5Elo[item.dataIndex];
+                  return ` Rating: ${p.elo} Elo`;
+                },
+                afterLabel: (item) => {
+                  const p = top5Elo[item.dataIndex];
+                  return [
+                    ` Record: ${p.wins}W ${p.losses}L (${p.winRate}% win rate)`,
+                    ` Net Chips: ${fmtNet(p.net)}`,
+                  ];
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              min: minFloor,
+              max: maxCeil,
+              ticks: {
+                color: muted,
+                font: { size: window.innerWidth < 680 ? 9 : 10 },
+              },
+              grid: { color: grid },
+            },
+            y: {
+              ticks: {
+                color: muted,
+                font: { size: window.innerWidth < 680 ? 10 : 12, weight: "600" },
+              },
+              grid: { display: false },
+            },
+          },
+          onClick: (event, elements) => {
+            if (elements && elements.length > 0) {
+              const p = top5Elo[elements[0].index];
+              if (p) {
+                window.location.href = `player.html?name=${encodeURIComponent(p.name)}`;
+              }
+            }
+          },
+          onHover: (event, elements) => {
+            if (event.native && event.native.target) {
+              event.native.target.style.cursor = elements && elements.length ? "pointer" : "default";
+            }
+          },
+        },
       })
     );
   }
@@ -479,12 +583,12 @@ function render() {
         ${renderStandingsTable(ranked)}
       </div>
 
-      <!-- 1/3 Right Column: Top 5 Cumulative Line + Daily Bar Charts + Hall of Fame Highlights -->
+      <!-- 1/3 Right Column: Top 5 Cumulative Line + Elo Power Ranking + Hall of Fame Highlights -->
       <div class="col-right-sidebar">
         <div class="charts-grid-side">
           <div class="chart-toggle" id="chartToggle">
             <button class="ct-btn active" data-chart="line">Cumulative</button>
-            <button class="ct-btn" data-chart="bar">Daily</button>
+            <button class="ct-btn" data-chart="elo">Elo Rating</button>
           </div>
           <div class="card chart-card mob-active" data-chart="line">
             <div class="card-header-flex">
@@ -496,13 +600,13 @@ function render() {
             </div>
           </div>
 
-          <div class="card chart-card" data-chart="bar">
+          <div class="card chart-card" data-chart="elo">
             <div class="card-header-flex">
-              <h2>Top 5 Daily Chips</h2>
-              <span class="badge-tag">Session Delta</span>
+              <h2>Elo Power Ranking</h2>
+              <span class="badge-tag">Top 5 Skill Tier</span>
             </div>
             <div class="chart-box-side">
-              <canvas id="top5BarChart"></canvas>
+              <canvas id="top5EloChart"></canvas>
             </div>
           </div>
         </div>
