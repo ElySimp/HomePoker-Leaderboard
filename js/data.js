@@ -17,17 +17,17 @@ const DEFAULT_PALETTE = [
   "#D9915B", // Teak Bronze
 ];
 
-// Available 10 Manual & Elo Rank Tiers (Rookie 100 to Grandmaster 2600+)
+// Available 10 Manual & Elo Rank Tiers (Rookie 100 to Grandmaster 1250+)
 const TIER_THRESHOLDS = [
-  { min: 2600, title: "Grandmaster", icon: "👑", cls: "tier-grandmaster" },
-  { min: 2350, title: "Master", icon: "⭐", cls: "tier-master" },
-  { min: 2150, title: "Expert", icon: "💠", cls: "tier-expert" },
-  { min: 1950, title: "Senior", icon: "🎖️", cls: "tier-senior" },
-  { min: 1700, title: "Advanced", icon: "⚡", cls: "tier-advanced" },
-  { min: 1450, title: "Intermediate", icon: "🔷", cls: "tier-intermediate" },
-  { min: 1200, title: "Junior", icon: "🔹", cls: "tier-junior" },
-  { min: 950, title: "Apprentice", icon: "🎯", cls: "tier-apprentice" },
-  { min: 700, title: "Novice", icon: "🔰", cls: "tier-novice" },
+  { min: 1250, title: "Grandmaster", icon: "👑", cls: "tier-grandmaster" },
+  { min: 1150, title: "Master", icon: "⭐", cls: "tier-master" },
+  { min: 1050, title: "Expert", icon: "💠", cls: "tier-expert" },
+  { min: 950, title: "Senior", icon: "🎖️", cls: "tier-senior" },
+  { min: 850, title: "Advanced", icon: "⚡", cls: "tier-advanced" },
+  { min: 750, title: "Intermediate", icon: "🔷", cls: "tier-intermediate" },
+  { min: 650, title: "Junior", icon: "🔹", cls: "tier-junior" },
+  { min: 550, title: "Apprentice", icon: "🎯", cls: "tier-apprentice" },
+  { min: 450, title: "Novice", icon: "🔰", cls: "tier-novice" },
   { min: 100, title: "Rookie", icon: "🛡️", cls: "tier-rookie" },
 ];
 
