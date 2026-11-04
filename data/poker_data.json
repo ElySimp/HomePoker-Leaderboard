@@ -806,6 +806,51 @@
           "status": "win"
         }
       ]
+    },
+    {
+      "session_id": "2026-11-03_100140",
+      "date": "2026-11-03",
+      "timestamp": "2026-11-04T10:01:40.568670",
+      "category": "Texas Hold'em",
+      "tax_per_round": 1,
+      "total_tax": 36,
+      "tax": 36,
+      "rounds": 36,
+      "default_buy_in": 50,
+      "players": [
+        {
+          "name": "Adrian",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 58,
+          "net": 8,
+          "status": "win"
+        },
+        {
+          "name": "Daniel",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 40,
+          "net": -10,
+          "status": "loss"
+        },
+        {
+          "name": "Fathi",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 8,
+          "net": -42,
+          "status": "loss"
+        },
+        {
+          "name": "Julio",
+          "buy_in": 50,
+          "bust_count": 0,
+          "final_chips": 58,
+          "net": 8,
+          "status": "win"
+        }
+      ]
     }
   ]
 }
