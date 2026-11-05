@@ -46,11 +46,15 @@ const KNOWN_TIERS = {
 
 let playerCustomProfiles = {};
 let calculatedEloRatings = {};
+let sessionPlayerEloChanges = {};
 
 // Multi-player pairwise Elo calculation (Start: 400, Floor: 100)
-// Balanced formula: 60% finish position, 30% contextual chip gap, 10% round-aware risk management
+// Exclusively calculates Elo for Texas Hold'em (skill-based player-vs-player poker).
+// Features: Bust-Free Shield (cushions disciplined survival), Dominance Multiplier (rewards crushing short sessions),
+// Killer Instinct (Chip Velocity in short rounds) & Tax Resistance (Endurance in long sessions).
 function computeAllEloRatings(sessions) {
   const ratings = {};
+  sessionPlayerEloChanges = {};
 
   // Sort sessions chronologically
   const sorted = [...sessions].sort(
@@ -58,6 +62,13 @@ function computeAllEloRatings(sessions) {
   );
 
   sorted.forEach((session) => {
+    const sId = session.session_id || `${session.date}_${session.timestamp || ""}`;
+    sessionPlayerEloChanges[sId] = {};
+
+    // Only calculate Elo for Texas Hold'em (exclude house/casino games like Blackjack/Baccarat)
+    const category = session.category || "Texas Hold'em";
+    if (category !== "Texas Hold'em") return;
+
     const players = session.players || [];
     const n = players.length;
     if (n < 2) return;
@@ -74,14 +85,15 @@ function computeAllEloRatings(sessions) {
       deltas[p.name] = 0;
     });
 
-    const baseK = 16;
+    const baseK = 20;
     const sessionRounds = session.rounds && session.rounds > 0 ? session.rounds : 0;
 
-    // Compute session-wide chip spread (max net - min net) to evaluate relative performance
+    // Compute session-wide chip spread & total winning chips
     const nets = players.map((p) => p.net || 0);
     const maxNet = Math.max(...nets);
     const minNet = Math.min(...nets);
     const spread = Math.max(20, maxNet - minNet);
+    const totalPositiveChips = nets.filter((x) => x > 0).reduce((a, b) => a + b, 0);
 
     // Pairwise decomposition
     for (let i = 0; i < n; i++) {
@@ -96,39 +108,92 @@ function computeAllEloRatings(sessions) {
         const expA = 1 / (1 + Math.pow(10, (rB - rA) / 400));
         const expB = 1 - expA;
 
-        // 1. Finish order head-to-head score (foundation ~60%)
+        // 1. Finish order head-to-head score (softened when both players lose)
         let actA = 0.5;
         let actB = 0.5;
         if (pA.net > pB.net) {
-          actA = 1.0;
-          actB = 0.0;
+          if (pA.net <= 0 && pB.net < 0) {
+            // Both lost: softened relative finish (winner of loser bracket didn't crush)
+            actA = Math.min(0.85, 0.5 + 0.35 * ((pA.net - pB.net) / spread));
+            actB = 1.0 - actA;
+          } else {
+            actA = 1.0;
+            actB = 0.0;
+          }
         } else if (pA.net < pB.net) {
-          actA = 0.0;
-          actB = 1.0;
+          if (pB.net <= 0 && pA.net < 0) {
+            actB = Math.min(0.85, 0.5 + 0.35 * ((pB.net - pA.net) / spread));
+            actA = 1.0 - actB;
+          } else {
+            actA = 0.0;
+            actB = 1.0;
+          }
         }
 
-        // 2. Contextual Chip Gap within the night's table spread (-1.0 to +1.0) (~30%)
+        // 2. Contextual Chip Gap within the night's table spread (-1.0 to +1.0)
         const chipGap = Math.max(-1.0, Math.min(1.0, (pA.net - pB.net) / spread));
 
-        // 3. Round-Aware Risk Management (Bust Density) (~10%)
-        // High bust count in few rounds = poor management penalty; marathon sessions tolerate natural bust variance
-        let bustAdj = 0;
+        // 3. Killer Instinct / Velocity Factor (Chip win-rate per round)
+        let velocityBonus = 0;
         if (sessionRounds > 0) {
-          const rateA = (pA.bust_count || 0) / Math.max(20, sessionRounds);
-          const rateB = (pB.bust_count || 0) / Math.max(20, sessionRounds);
-          bustAdj = Math.max(-0.2, Math.min(0.2, (rateB - rateA) * 2.0));
+          const paceA = (pA.net || 0) / Math.max(12, sessionRounds);
+          const paceB = (pB.net || 0) / Math.max(12, sessionRounds);
+          velocityBonus = Math.max(-0.8, Math.min(0.8, (paceA - paceB) / 8.0));
         }
 
-        const pairDelta = (baseK / (n - 1)) * (actA - expA + 0.30 * chipGap + bustAdj);
+        // 4. Round-Aware Risk Management & Bust Siphon
+        // Penalizes rapid reckless bust; winner who took chips receives direct positive delta
+        let bustAdj = 0;
+        if (sessionRounds > 0) {
+          const rateA = (pA.bust_count || 0) / Math.max(12, sessionRounds);
+          const rateB = (pB.bust_count || 0) / Math.max(12, sessionRounds);
+          bustAdj = Math.max(-0.6, Math.min(0.6, (rateB - rateA) * 3.5));
+        }
+
+        // 5. Bust-Free Shield (cushions disciplined players who lost without ever rebuying)
+        const shieldA = (pA.bust_count === 0 && pA.net < 0) ? 0.35 : 0;
+        const shieldB = (pB.bust_count === 0 && pB.net < 0) ? 0.35 : 0;
+        const shieldAdj = shieldA - shieldB;
+
+        // 6. Table Dominance & Share of Pot
+        // Rewards a player who captured the vast majority of the table's profit
+        const shareA = totalPositiveChips > 0 && pA.net > 0 ? (pA.net / totalPositiveChips) : 0;
+        const shareB = totalPositiveChips > 0 && pB.net > 0 ? (pB.net / totalPositiveChips) : 0;
+        const dominanceAdj = Math.max(-0.6, Math.min(0.6, (shareA - shareB) * 0.8));
+
+        // 7. Tax Resistance & Iron Defense in Marathon Sessions (>= 35 rounds)
+        let enduranceAdj = 0;
+        if (sessionRounds >= 35) {
+          const endA = (pA.bust_count === 0 ? 0.15 : 0) + (pA.net > 0 ? 0.15 : 0);
+          const endB = (pB.bust_count === 0 ? 0.15 : 0) + (pB.net > 0 ? 0.15 : 0);
+          const roundScale = Math.min(1.5, sessionRounds / 50);
+          enduranceAdj = Math.max(-0.25, Math.min(0.25, (endA - endB) * roundScale));
+        }
+
+        const pairDelta = (baseK / (n - 1)) * (
+          (actA - expA) +
+          0.20 * chipGap +
+          0.25 * velocityBonus +
+          0.15 * bustAdj +
+          0.20 * shieldAdj +
+          0.15 * dominanceAdj +
+          0.10 * enduranceAdj
+        );
 
         deltas[pA.name] += pairDelta;
         deltas[pB.name] -= pairDelta;
       }
     }
 
-    // Apply deltas with minimum floor of 100
+    // Apply deltas with minimum floor of 100 and record per-match Elo shift
     players.forEach((p) => {
-      ratings[p.name] = Math.max(100, Math.round((ratings[p.name] + deltas[p.name]) * 10) / 10);
+      const oldRating = ratings[p.name];
+      const newRating = Math.max(100, Math.round((oldRating + deltas[p.name]) * 10) / 10);
+      ratings[p.name] = newRating;
+      sessionPlayerEloChanges[sId][p.name] = {
+        delta: Math.round((newRating - oldRating) * 10) / 10,
+        postElo: Math.round(newRating),
+      };
     });
   });
 
@@ -209,6 +274,9 @@ function buildPlayerStats(sessions) {
       if (!st.best || p.net > st.best.net) st.best = { net: p.net, date: s.date };
       if (!st.worst || p.net < st.worst.net) st.worst = { net: p.net, date: s.date };
 
+      const sId = s.session_id || `${s.date}_${s.timestamp || ""}`;
+      const eloInfo = sessionPlayerEloChanges[sId]?.[p.name];
+
       st.history.push({
         date: s.date,
         category: s.category,
@@ -219,6 +287,8 @@ function buildPlayerStats(sessions) {
         net: p.net,
         status: p.status,
         cumulative: st.net,
+        eloDelta: eloInfo !== undefined ? eloInfo.delta : null,
+        postElo: eloInfo !== undefined ? eloInfo.postElo : null,
       });
     });
   });

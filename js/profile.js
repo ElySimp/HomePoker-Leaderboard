@@ -65,29 +65,49 @@ function renderHistory(history) {
     .reverse()
     .map((h) => {
       const bust = h.bust_count > 0 ? `<span class="neg">${h.bust_count}x</span>` : "-";
+      let eloHtml = `<span style="color:var(--muted)">-</span>`;
+      if (h.eloDelta !== null && h.eloDelta !== undefined) {
+        if (h.eloDelta > 0) {
+          eloHtml = `<span class="pos"><b>+${h.eloDelta}</b></span> <span style="font-size:11px;color:var(--muted)">(${h.postElo})</span>`;
+        } else if (h.eloDelta < 0) {
+          eloHtml = `<span class="neg"><b>${h.eloDelta}</b></span> <span style="font-size:11px;color:var(--muted)">(${h.postElo})</span>`;
+        } else {
+          eloHtml = `<span style="color:var(--muted)"><b>0.0</b></span> <span style="font-size:11px;color:var(--muted)">(${h.postElo})</span>`;
+        }
+      }
+
       return `<tr>
         <td>${esc(h.date)}</td>
         <td>${esc(h.category)}</td>
-        <td>${h.buy_in}</td>
         <td>${bust}</td>
         <td>${h.final_chips}</td>
         <td class="${netClass(h.net)}"><b>${fmtNet(h.net)}</b></td>
+        <td>${eloHtml}</td>
         <td><span class="pill ${h.status}">${h.status.toUpperCase()}</span></td>
       </tr>`;
     })
     .join("");
+
   const mobileRows = [...history]
     .reverse()
     .slice(0, 10)
     .map((h) => {
       const info = [
         esc(h.category),
-        `Buy-in ${h.buy_in}${h.bust_count > 0 ? ` (${h.bust_count}x bust)` : ""}`,
+        h.bust_count > 0 ? `${h.bust_count}x bust` : "0 bust",
         `Final ${h.final_chips}`,
       ];
+
+      let eloBadge = "";
+      if (h.eloDelta !== null && h.eloDelta !== undefined) {
+        const sign = h.eloDelta > 0 ? "+" : "";
+        const eloCls = h.eloDelta > 0 ? "pos" : h.eloDelta < 0 ? "neg" : "neu";
+        eloBadge = `<span class="${eloCls}" style="font-size:11px;font-weight:700;margin-left:6px">${sign}${h.eloDelta} Elo</span>`;
+      }
+
       return `<div class="hist-row">
         <div class="hist-main">
-          <div class="hist-date">${esc(h.date)}</div>
+          <div class="hist-date">${esc(h.date)} ${eloBadge}</div>
           ${rotLineHtml(info)}
         </div>
         <div class="hist-net ${netClass(h.net)}"><b>${fmtNet(h.net)}</b></div>
@@ -97,7 +117,7 @@ function renderHistory(history) {
     .join("");
 
   return `<div class="table-wrap hist-table"><table>
-    <thead><tr><th>Date</th><th>Game</th><th>Buy-In</th><th>Busts</th><th>Final</th><th>Net</th><th>Result</th></tr></thead>
+    <thead><tr><th>Date</th><th>Game</th><th>Busts</th><th>Final</th><th>Net</th><th>Elo Impact</th><th>Result</th></tr></thead>
     <tbody>${rows}</tbody></table></div>
     <div class="hist-list">${mobileRows}</div>`;
 }
